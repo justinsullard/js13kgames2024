@@ -1,0 +1,17 @@
+nil
+one
+pair
+fizz
+few
+buzz
+half-dozen
+week
+char
+rubik
+1e1
+bunch
+dozen
+magick
+something
+fizzbuzz
+double

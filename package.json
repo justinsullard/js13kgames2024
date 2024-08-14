@@ -1,0 +1,25 @@
+{
+  "name": "codetastrophy",
+  "version": "0.13.0",
+  "description": "You are the cursor. Chug coffee. Throw code. Fix bugs.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justinsullard/js13kgames2024.git"
+  },
+  "keywords": [
+    "js13kgames",
+    "javascript",
+    "roguelike"
+  ],
+  "author": "Justin Sullard",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justinsullard/js13kgames2024/issues"
+  },
+  "homepage": "https://github.com/justinsullard/js13kgames2024#readme"
+}
