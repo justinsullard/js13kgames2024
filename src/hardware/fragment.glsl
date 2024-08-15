@@ -4,6 +4,7 @@ precision mediump float;
 
 uniform mediump sampler2DArray uSampler;
 
+// uniform float time; // 0
 // uniform vec2 warp; // vec2(1.0 / 51.0, 1.0 / 46.0);
 uniform vec2 mask; // vec2(0.25, 0.9)
 uniform float fxmix; // 0.2
@@ -42,5 +43,5 @@ void main() {
     fragColor.rgb = fragColor.rgb + brightness;
     fragColor.rgb = 0.5 + (contrast + 1.0) * (fragColor.rgb - 0.5);
     fragColor.rgb = mix(vec3(dot(fragColor.rgb, luminanceWeighting)), fragColor.rgb, 1.0 + saturation);
-    fragColor.a = vAlpha;
+    fragColor.a *= vAlpha;
 }

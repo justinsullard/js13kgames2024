@@ -1,0 +1,26 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    place-content: center;
+    overflow: hidden;
+}
+body, canvas {
+    background-color: #19100c;
+    cursor: none;
+}
+#screen {
+    z-index: 1;
+    max-width: 1280px;
+    max-height: 960px;
+    flex: 1;
+    align-self: center;
+}
+#pointy {
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+    display: none;
+}

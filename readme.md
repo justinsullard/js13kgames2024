@@ -151,6 +151,17 @@ stateDiagram-v2
     RepoReadme --> RepoMenu : Esc
 ```
 
+### Day 1: 2024-08-14T11:00:00.000Z
+
+I am still sick, so was not able to put in as much time as I had hoped.
+Aside from letting a little proof of concept I whipped together from while I was learning WebGL2 that was running on my screen all day I didn't get to coding until after work. And supper. And medication.
+
+Needless to say all I was really able to focus on was getting the rendering working with all of the uniforms I want to have control over, and some prelimary work on the mouse pointer.
+
+I did manage to put together a local dev server, and work out the various imports, and now having something rendering to the screen and updating the mouse pointer at least.
+
+Tomorrow I'll get the initial loading screen and (hopefully) login process working.
+
 ## References and Credits
 
 There are a large number of sources that I could name, but most directly over the last couple of months, and the development of this game, these specific sources proved valuable in my efforts to implement **Codetastrophy**.
@@ -165,3 +176,4 @@ There are a large number of sources that I could name, but most directly over th
 * <https://github.com/denysdovhan/wtfjs>
 * <https://en.wikipedia.org/wiki/JSFuck>
 * <https://github.com/scriptfoundry/WebGL2-Videos-Materials>
+* [Image Optimizer](https://github.com/GijsGoudzwaard/Image-Optimizer)
