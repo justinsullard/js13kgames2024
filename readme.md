@@ -164,6 +164,8 @@ I did manage to put together a local dev server, and work out the various import
 
 Tomorrow I'll get the initial loading screen and (hopefully) login process working.
 
+![Peek 2024-08-15 00-44](./devlogassets/Peek 2024-08-15 00-44.gif)
+
 ## References and Credits
 
 There are a large number of sources that I could name, but most directly over the last couple of months, and the development of this game, these specific sources proved valuable in my efforts to implement **Codetastrophy**.
