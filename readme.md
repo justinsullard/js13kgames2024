@@ -156,9 +156,9 @@ stateDiagram-v2
 ### Day 1: 2024-08-14T11:00:00.000Z
 
 I am still sick, so was not able to put in as much time as I had hoped.
-Aside from letting a little proof of concept I whipped together from while I was learning WebGL2 that was running on my screen all day I didn't get to coding until after work. And supper. And medication.
+Aside from letting a little proof of concept play in the background (one that I whipped together from while I was learning WebGL2) I didn't even look at the game until after work. And supper. And medication.
 
-Needless to say all I was really able to focus on was getting the rendering working with all of the uniforms I want to have control over, and some prelimary work on the mouse pointer.
+Needless to say all I was really able to focus on was getting the rendering working with all of the uniforms I want to have control over, and some preliminary work on the mouse pointer.
 
 I did manage to put together a local dev server, and work out the various imports, and now having something rendering to the screen and updating the mouse pointer at least.
 
