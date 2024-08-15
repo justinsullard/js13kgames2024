@@ -7,28 +7,30 @@ Fix bugs.
 
 ## Todo
 
+* [ ] Finish Todo List
 * [ ] Build Screen
     * [x] Build Font
         * [x] Initial Layout
-        * [ ] Alpha Analysis
-        * [ ] Build 3D texture
+        * [x] Alpha Analysis
+        * [x] Build 3D texture
     * [x] Build Theme
     * [ ] Build Renderer
         * [ ] Data Buffers
-            * [ ] Distortion Uniforms (vec2 skew, vec2 warp, vec2 mask, float fxmix, float brightness, float contrast, float saturation)
-            * [ ] Cell Data 4800x(vec2 offset, vec4 fg, vec4 bg, float alpha, float char)
+            * [x] Distortion Uniforms (vec2 skew, vec2 warp, vec2 mask, float fxmix, float brightness, float contrast, float saturation)
+            * [x] Cell Data 4800x(vec2 offset, vec4 fg, vec4 bg, float alpha, float char)
             * [ ] FX Data (80 x 60 UInt8 rgba ImageData)
-            * [ ] Entity Data (256 bugs, 1 dumpster fire, 1 cursor, 1 pointer)
+            * [x] Entity Data (256 bugs, 1 dumpster fire, 1 cursor, 1 pointer)
         * [x] Vertex Shader
         * [x] Fragment Shader
         * [ ] Render Loop : cells.each(FX ?? Grid ?? flames) + entities
         * [ ] Print functions
-            * [ ] Print
+            * [x] Print
+            * [x] Printf
             * [ ] FX
 * [ ] Build Mouse
     * [ ] Add Handlers
-    * [ ] Add Entity
-    * [ ] Use canvas to 
+    * [x] Add Entity
+    * [x] Use canvas to spoof cursor
 * [ ] Build Speaker
     * [ ] Build Scales (7 of 13, 5 of 13, 5 of 7 of 13)
     * [ ] Build Rhythms
