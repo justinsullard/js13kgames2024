@@ -1,6 +1,6 @@
 {
   "name": "codetastrophy",
-  "version": "0.13.0",
+  "version": "0.13.2",
   "description": "You are the cursor. Chug coffee. Throw code. Fix bugs.",
   "type": "module",
   "main": "index.js",

@@ -14,25 +14,26 @@ Fix bugs.
         * [x] Alpha Analysis
         * [x] Build 3D texture
     * [x] Build Theme
-    * [ ] Build Renderer
-        * [ ] Data Buffers
+    * [x] Build Renderer
+        * [x] Data Buffers
             * [x] Distortion Uniforms (vec2 skew, vec2 warp, vec2 mask, float fxmix, float brightness, float contrast, float saturation)
             * [x] Cell Data 4800x(vec2 offset, vec4 fg, vec4 bg, float alpha, float char)
-            * [ ] FX Data (80 x 60 UInt8 rgba ImageData)
+            * [x] ~~FX Data (80 x 60 UInt8 rgba ImageData~)~
             * [x] Entity Data (256 bugs, 1 dumpster fire, 1 cursor, 1 pointer)
         * [x] Vertex Shader
         * [x] Fragment Shader
-        * [ ] Render Loop : cells.each(FX ?? Grid ?? flames) + entities
-        * [ ] Print functions
+        * [x] ~~Render Loop : cells.each(FX ?? Grid ?? flames) + entities~~
+        * [x] Print functions
             * [x] Print
             * [x] Printf
-            * [ ] FX
-* [ ] Build Mouse
-    * [ ] Add Handlers
+            * [x] Text
+            * [x] ~~FX~~
+* [x] Build Mouse
+    * [x] Add Handlers
     * [x] Add Entity
     * [x] Use canvas to spoof cursor
 * [ ] Build Speaker
-    * [ ] Build Scales (7 of 13, 5 of 13, 5 of 7 of 13)
+    * [x] Build Scales (7 of 13, 5 of 13, 5 of 7 of 13)
     * [ ] Build Rhythms
         * [ ] (1-13) of (15, 17, 23, 26)
         * [ ] fizzbuzz of (15, 17, 23, 26)
@@ -69,7 +70,7 @@ Fix bugs.
         * [ ] Logs
         * [ ] Informant
         * [ ] Input
-        * [ ] Title
+        * [x] Title
         * [ ] MainMenu
         * [ ] RepoMenu
         * [ ] Achievements
@@ -165,6 +166,14 @@ I did manage to put together a local dev server, and work out the various import
 Tomorrow I'll get the initial loading screen and (hopefully) login process working.
 
 <img src="./devlogassets/Peek 2024-08-15 00-44.gif">
+
+### Day 2: 2024-08-15T11:00:00.000Z
+
+Still a little sick. Still working. Doing better, though. I didn't get to complete as much stuff this evening as I had hoped, but I DID make pretty decent progress on the Title and a few other things, as well as do some decoupling by implementing a message bus.
+
+I've also decided on a different approach than I was originally thinking regarding the fx. At this point the actual print operations aren't that expensive, so until it becomes an issue, I will simply print fx on demand with each indivual animation encountered. We'll see how it plays out.
+
+<img src="./devlogassets/Peek 2024-08-16 02-24.gif">
 
 ## References and Credits
 
