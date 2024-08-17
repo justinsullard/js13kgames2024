@@ -29,3 +29,5 @@ const bus = {
     }
 };
 export default bus;
+// window.bus = bus; // TODO: Remove this
+

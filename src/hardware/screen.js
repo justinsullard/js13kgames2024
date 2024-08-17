@@ -50,7 +50,7 @@ export const hscale = 1/30;
 
 export const transformStride = 12;
 
-const defaultUniforms = () => ({
+export const defaultUniforms = () => ({
     time: 0,
     warp: new Float32Array([1 / 51, 1 / 46]),
     mask: new Float32Array([0.25, 0.9]),
@@ -66,6 +66,7 @@ bus.once("init", async ({ $screen, image }) => {
     fragmentShaderSrc = fragmentShaderSrc || await loadShader("./hardware/fragment.glsl");
 
     $screen.style.boxShadow = `${theme.background} 0px 0px 2px 3px`;
+    $screen.style.opacity = 1;
 
     const gl = $screen.getContext("webgl2", {
         premultipliedAlpha: false  // Ask for non-premultiplied alpha

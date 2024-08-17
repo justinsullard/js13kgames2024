@@ -175,6 +175,19 @@ I've also decided on a different approach than I was originally thinking regardi
 
 <img src="./devlogassets/Peek 2024-08-16 02-24.gif">
 
+### Day 3: 2024-08-16T11:00:00.000Z
+
+Still sick, and going to be working some more this evening so only getting a little time to game jam tonight.
+
+The Discord had some great feedback that I hope I was able to integrate regarding the readability of the title screen. I like what I've come up with.
+
+<img src="./devlogassets/Peek 2024-08-16 21-26.gif">
+
+I decided I wanted to hear some things, so... I put together the speaker and voice. Now to see if we can't do something with them.
+
+<img src="./devlogassets/Peek 2024-08-16 21-25.gif">
+
+
 ## References and Credits
 
 There are a large number of sources that I could name, but most directly over the last couple of months, and the development of this game, these specific sources proved valuable in my efforts to implement **Codetastrophy**.

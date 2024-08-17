@@ -11,10 +11,11 @@ body, canvas {
 }
 #screen {
     z-index: 1;
-    max-width: 1280px;
-    max-height: 960px;
+    max-width: clamp(640px, 1280px, 100vw);
+    max-height: clamp(480px, 960px, 100vh);
     flex: 1;
     align-self: center;
+    opacity: 0;
 }
 #pointy {
     pointer-events: none;

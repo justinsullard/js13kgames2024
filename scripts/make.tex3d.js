@@ -1,5 +1,5 @@
-const { createWriteStream } = require("fs");
-const { createCanvas, loadImage } = require("canvas");
+import { createWriteStream } from "fs";
+import { createCanvas, loadImage } from "canvas";
 
 const save = canvas => new Promise((resolve, reject) => {
   const out = createWriteStream("../src/font/codetastrophy.tex3d.png");

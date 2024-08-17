@@ -1,12 +1,67 @@
 import bus from "../hardware/bus.js";
 import { theme, colorMap, charfade } from "../hardware/screen.js";
 import squirrel from "../util/squirrel.js";
+import stripe from "../util/stripe.js";
 
 const nameRGB = colorMap.name.slice(0, 3);
+const w = 56;
+const h = 13;
+let hovered = false;
+let active = false;
+let data;
+
+bus.on("open@title", () => active = true);
+bus.on("close@title", () => active = false);
+bus.on("@hover", (x, y) => hovered = active && x >= 33 && x <= 47 && y == 35);
+bus.on("click", () => {
+    if (!hovered || !active){ return; }
+    bus.emit("@say", "Welcome to code-tastrophy!");
+});
+bus.on("draw@title", (dur) => {
+    if (!data) { return; }
+    const d169 = dur/169;
+    const d125 = Math.sin(dur/125);
+    const d39 = dur/39;
+    const d1300 = Math.sin(dur/1300);
+
+    const mina = 0.21;
+    for (let c = 0; c < 4800; c++) {
+        const x = c % 80;
+        const y = c / 80 | 0;
+        const y59 = y / 59;
+        const s = squirrel(
+            13,
+            x + Math.sin(y + d169) * (1.3 - y59)**3 | 0 ,
+            y + d39 | 0,
+            d125 | 0
+        ) * y59**1.13 + ((Math.cos((x - 40) / (5 - d1300)) - 1) / 13);
+        const fg = s > 0.6 ? colorMap.smell : (s > 0.4 ? colorMap.exception : (s >= mina ? colorMap.variable : colorMap.gutter));
+        const bg = s > 0.6 ? colorMap.string : (s > 0.4 ? colorMap.variable : (s >= mina ? colorMap.keyword : colorMap.padding));
+        bus.emit("print@screen", x, y, fg, [...bg.slice(0, 3), s / 2], s, charfade[(s - mina) / (1 - mina) * 127 | 0]);
+    }
+
+    for (let c = w * h; c--;) {
+        const color = data.slice(c * 4, c * 4 + 4);
+        const alpha = color[3] / 255;
+        // const rgba = [color[0]/255, color[1]/255, color[2]/255, 1];
+        const rgba = [color[0]/255, color[1]/255, color[2]/255, alpha];
+        if (alpha) {
+            bus.emit("print@screen",
+                (c % w) + 12,
+                ((c / w) | 0) + 23,
+                rgba,
+                [...nameRGB, alpha**2],
+                1,
+                charfade[(color[3] - 3 + Math.sin(d169 + (c/13)**1.3) * 3) / 2 | 0],
+            );
+        }
+    }
+    bus.emit("printf@screen", "v0.13.3", 40, 33, colorMap.code);
+    bus.emit("text@screen", "Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
+});
+
 
 bus.once("init", ({ image }) => {
-    const w = 56;
-    const h = 13;
     const canvas = new OffscreenCanvas(w, h);
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, w, h);
@@ -15,61 +70,27 @@ bus.once("init", ({ image }) => {
             0, (144 + l) * 8, 8, 8,
             l * 8, 2, 8, 8);
     }
+    let fade;
+    
     ctx.globalCompositeOperation = "source-in";
-    const fade = ctx.createLinearGradient(0, 0, 0, 13);
-    fade.addColorStop(0, theme.code);
-    fade.addColorStop(1, theme.code + "00");
-    ctx.fillStyle = fade;
-    ctx.globalAlpha = 1.0;
+
+    fade = ctx.createLinearGradient(0, 0, 56, 0);
+    stripe(14).forEach(i => {
+        fade.addColorStop((i+0.1)/14, theme.code);
+        fade.addColorStop((i+1)/14, theme.code + "80");
+    });
+    ctx.fillStyle = fade;    
     ctx.fillRect(0, 0, 56, 13);
+
+    fade = ctx.createLinearGradient(0, 0, 0, 13);
+    fade.addColorStop(0.25, theme.code);
+    fade.addColorStop(1, theme.code + "20");
+    ctx.fillStyle = fade;    
+    ctx.fillRect(0, 0, 56, 13);
+
+
     ctx.globalCompositeOperation = "source-over";
 
-    const { data } = ctx.getImageData(0, 0, 56, 13);
-
-    let hovered = false;
-    bus.on("@hover", (x, y) => hovered = x >= 33 && x <= 47 && y == 35);
-
-    const draw = (dur) => {
-        const d169 = dur/169;
-        const d125 = Math.sin(dur/125);
-        const d39 = dur/39;
-        const d1300 = Math.sin(dur/1300);
-
-        const mina = 0.21;
-        for (let c = 0; c < 4800; c++) {
-            const x = c % 80;
-            const y = c / 80 | 0;
-            const y59 = y / 59;
-            const s = squirrel(
-                13,
-                x + Math.sin(y + d169) * (1.3 - y59)**3 | 0 ,
-                y + d39 | 0,
-                d125 | 0
-            ) * y59**1.13 + ((Math.cos((x - 40) / (5 - d1300)) - 1) / 13);
-            const fg = s > 0.6 ? colorMap.smell : (s > 0.4 ? colorMap.exception : (s >= mina ? colorMap.variable : colorMap.gutter));
-            const bg = s > 0.6 ? colorMap.string : (s > 0.4 ? colorMap.variable : (s >= mina ? colorMap.keyword : colorMap.padding));
-            bus.emit("print@screen", x, y, fg, [...bg.slice(0, 3), s / 2], s, charfade[(s - mina) / (1 - mina) * 127 | 0]);
-        }
-
-        for (let c = w * h; c--;) {
-            const color = data.slice(c * 4, c * 4 + 4);
-            const alpha = color[3] / 255;
-            const rgba = [color[0]/255, color[1]/255, color[2]/255, 1];
-            if (alpha) {
-                bus.emit("print@screen",
-                    (c % w) + 12,
-                    ((c / w) | 0) + 23,
-                    rgba,
-                    [...nameRGB, alpha**2],
-                    1,
-                    charfade[(color[3] + Math.sin(d169 + (c/13)**1.3) * 3) / 2 | 0],
-                );
-            }
-        }
-
-        bus.emit("prtinf@screen", "v0.13.2", 40, 33, colorMap.code);
-        bus.emit("text@screen", "Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
-    };
-    bus.on("draw@title", draw);
+    data = ctx.getImageData(0, 0, 56, 13).data;
 
 });
