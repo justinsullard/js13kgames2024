@@ -6,6 +6,7 @@ import stripe from "../util/stripe.js";
 const nameRGB = colorMap.name.slice(0, 3);
 const w = 56;
 const h = 13;
+const pow = 131313;
 let hovered = false;
 let active = false;
 let data;
@@ -19,10 +20,11 @@ bus.on("click", () => {
 });
 bus.on("draw@title", (dur) => {
     if (!data) { return; }
-    const d169 = dur/169;
-    const d125 = Math.sin(dur/125);
-    const d39 = dur/39;
-    const d1300 = Math.sin(dur/1300);
+    const t = dur % pow;
+    const d169 = t/169;
+    const d125 = Math.sin(t/125);
+    const d39 = t/39;
+    const d1300 = Math.sin(t/1300);
 
     const mina = 0.21;
     for (let c = 0; c < 4800; c++) {
@@ -43,7 +45,6 @@ bus.on("draw@title", (dur) => {
     for (let c = w * h; c--;) {
         const color = data.slice(c * 4, c * 4 + 4);
         const alpha = color[3] / 255;
-        // const rgba = [color[0]/255, color[1]/255, color[2]/255, 1];
         const rgba = [color[0]/255, color[1]/255, color[2]/255, alpha];
         if (alpha) {
             bus.emit("print@screen",
@@ -56,10 +57,9 @@ bus.on("draw@title", (dur) => {
             );
         }
     }
-    bus.emit("printf@screen", "v0.13.3", 40, 33, colorMap.code);
+    bus.emit("printf@screen", "v0.13.4", 40, 33, colorMap.code);
     bus.emit("text@screen", "Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
 });
-
 
 bus.once("init", ({ image }) => {
     const canvas = new OffscreenCanvas(w, h);

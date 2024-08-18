@@ -14,7 +14,7 @@ if (synth && voices) {
         [
             "Welcome to code-tastrophy!",
             "Input your desired username, then press Enter",
-            "Ha. Ha. Ha. No. You're now noobie 416839",
+            "Ha. Ha. Ha. No. You're now noobie a, 3, f, 7, 8, c.",
             "Create your new password, then press Enter.",
             "Invalid. Must contain 1 haiku. Please try again.",
             "Invalid. Are you even trying? Let's do this again.",

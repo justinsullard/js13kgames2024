@@ -187,6 +187,9 @@ I decided I wanted to hear some things, so... I put together the speaker and voi
 
 <img src="./devlogassets/Peek 2024-08-16 21-25.gif">
 
+### Day 4: 2024-08-17T11:00:00.000Z
+
+I mostly played with the speaker today.
 
 ## References and Credits
 
