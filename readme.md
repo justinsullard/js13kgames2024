@@ -191,6 +191,11 @@ I decided I wanted to hear some things, so... I put together the speaker and voi
 
 I mostly played with the speaker today.
 
+### Day 5: 2024-08-18T11:00:00.000Z
+
+Okay, it's time to actually get this game working. First step... username and password.
+
+
 ## References and Credits
 
 There are a large number of sources that I could name, but most directly over the last couple of months, and the development of this game, these specific sources proved valuable in my efforts to implement **Codetastrophy**.

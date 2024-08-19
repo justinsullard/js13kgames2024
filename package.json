@@ -25,6 +25,7 @@
   "devDependencies": {
     "@babel/parser": "^7.25.3",
     "canvas": "^2.11.2",
+    "fs-extra": "^11.2.0",
     "recursive-watch": "^1.1.4",
     "roadroller": "^2.1.0",
     "rollup": "^4.20.0",

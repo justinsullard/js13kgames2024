@@ -1,8 +1,7 @@
 import StaticServer from "static-server";
 import watch from "recursive-watch";
 
-
-let build = null;
+import build from "./scripts/build.js";
 
 const main = async () => {
 
@@ -12,6 +11,7 @@ const main = async () => {
     
     watch('./src', (filename) => {
         console.log('something changed with', filename);
+        build().then(() => console.log("Build complete")).catch(console.error);
     });
 
 };

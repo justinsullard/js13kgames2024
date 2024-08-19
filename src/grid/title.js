@@ -11,15 +11,18 @@ let hovered = false;
 let active = false;
 let data;
 
-bus.on("open@title", () => active = true);
+bus.on("open@title", () => {
+    active = true;
+    bus.emit("melody@speaker", "codetastrophy");
+});
 bus.on("close@title", () => active = false);
 bus.on("@hover", (x, y) => hovered = active && x >= 33 && x <= 47 && y == 35);
 bus.on("click", () => {
     if (!hovered || !active){ return; }
-    bus.emit("@say", "Welcome to code-tastrophy!");
+    bus.emit("@state", "login");
 });
 bus.on("draw@title", (dur) => {
-    if (!data) { return; }
+    if (!data || !active) { return; }
     const t = dur % pow;
     const d169 = t/169;
     const d125 = Math.sin(t/125);

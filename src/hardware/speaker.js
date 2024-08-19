@@ -2,12 +2,10 @@ import sort from "../util/sort.js";
 import stripe from "../util/stripe.js";
 import euclidean from "../util/euclidean.js";
 import merge from "../util/merge.js";
-import fizzbuzz from "../util/fizzbuzz.js";
 import notes from "../util/notes.js";
 import uniq from "../util/uniq.js";
 import bus from "./bus.js";
 import { colorMap, transparent } from "./screen.js";
-// import squirrel from "../util/squirrel.js";
 
 const musick = notes();
 
@@ -43,8 +41,6 @@ const hire = () => {
     }
     reverb.buffer = impulse;
     reverb.connect(analyzer);
-    // console.log("impulse", impulse);
-
 
     window.removeEventListener("click", hire);
     if (!hovered) { active = true; }
@@ -61,9 +57,87 @@ const scales = uniq(
         ].filter(x => x.length === 7).map(x => x.join(","))
     ).flat()
 ).map(x => x.split(",").map(x => 1 * x));
+scales.push([0, 1, 4, 6, 8, 9, 12]);
 
 const melodies = {
+    hi: {
+        name: "Hi by Rich Lions",
+        scale: 26,
+        octave: 3,
+        key: 5,
+        notes: [
+            [0, 3, 4],
+
+            [13, 3, 1],
+            [14, 2, 1],
+            [15, 4, 1],
+            [17, 3, 1],
+            [19, 3, 1],
+            [20, 2, 1],
+            [21, 4, 4],
+
+            [26, 2, 1],
+        ],
+        bass: [
+            [0, 4, 2],
+            [4, 3, 2],
+            [8, 2, 2],
+            [12, 1, 2],
+            [16, 0, 4],
+            [20, -3, 4],
+            [24, 0, 2],
+        ],
+    },
+    ohno: {
+        name: "Oh no",
+        scale: 39, // 21,
+        octave: 2,
+        key: 8,
+        notes: [
+            [0, 0, 1],
+            [1, 1, 1],
+            [2, 2, 1],
+            [3, 0, 1],
+            [4, 1, 1],
+            [5, 2, 1],
+            [6, 3, 1],
+            [7, 4, 1],
+            [8, 5, 1],
+            [9, 4, 3],
+
+            [12, 7, 1],
+            [13, 8, 1],
+            [14, 9, 1],
+            [15, 7, 1],
+            [16, 8, 1],
+            [17, 9, 1],
+
+            [18, 4, 1],
+            [19, 5, 1],
+            [20, 6, 1],
+            [21, 7, 3],
+
+            // [23, 7, 3],
+            [24, 6, 1],
+            [25, 2, 1],
+            [26, 1, 1],
+        ],
+        bass: [
+            [0, 0, 3],
+            [3, 0, 3],
+            [6, 3, 3],
+            [9, 4, 3],
+            [12, 0, 3],
+            [15, 0, 3],
+            [18, -3, 2],
+            [20, -1, 1],
+            [21, 0, 3],
+            [23, -7, 2],
+            [25, -5, 2],
+        ],
+    },
     nevergiveup: {
+        name: "Never Give Up by Rick Roller",
         scale: 17,
         octave: 3,
         key: 1,
@@ -94,7 +168,8 @@ const melodies = {
         ],
     },
     uphill: {
-        scale: 3,
+        name: "Uphill by K Shrub",
+        scale: 7,
         octave: 3,
         key: 3,
         notes: [ // 1 7 7 7 5  1 7 7 7 4 
@@ -139,7 +214,8 @@ const melodies = {
         ],
     },
     strangers: {
-        scale: 24,
+        name: "Strangers by The Things",
+        scale: 9,
         octave: 3,
         key: 3,
         notes: [
@@ -183,6 +259,7 @@ const melodies = {
         ],
     },
     buzzed: {
+        name: "Buzzed by The Fizz",
         scale: 15,
         octave: 2,
         key: 9,
@@ -211,6 +288,7 @@ const melodies = {
         ],
     },
     codetastrophy: {
+        name: "Code-tastrophy",
         scale: 13,
         octave: 2,
         key: 0,
@@ -226,6 +304,7 @@ const melodies = {
         ],
     },
     bizznezz: {
+        name: "Bizznezz",
         scale: 4,
         octave: 2,
         key: 7,
@@ -237,6 +316,7 @@ const melodies = {
         bass: euclidean(9, 0, 27).map((x, i) => [x + 2, 8 - i, 2.5]),
     },
     oops: {
+        name: "Oops",
         scale: 35,
         octave: 2,
         key: 1,
@@ -270,7 +350,7 @@ const tickOfMeasure = (dur) => ((((dur / mpb) % 27) | 0) + 1) % 27;
 const lramp = (x, ...y) => x.linearRampToValueAtTime(...y);
 const expramp = (x, ...y) => x.exponentialRampToValueAtTime(...y);
 const sval = (x, ...y) => x.setValueAtTime(...y);
-
+const con = (a, b, ...x) => a.connect(b, ...x);
  // note, len, vol, verb, attack, deflate
 const play = (tick, dur, type = "sine", octave = 1, note = 0, len = 1, vol = 0.5, verb = 0.5, attack = 0.001, deflate = 0.5) => {
     const decay = len * spb;
@@ -309,35 +389,27 @@ const play = (tick, dur, type = "sine", octave = 1, note = 0, len = 1, vol = 0.5
     lramp(verbage.gain, vol * verb, when + 0.1);
     lramp(verbage.gain, 0.01, when + decay);
 
-    osc.connect(gain);
-    gain.connect(comp);
-    comp.connect(split);
-    split.connect(analyzer, 0, 0);
-    split.connect(verbage, 1, 0);
-    verbage.connect(reverb);
+    con(osc, gain);
+    con(gain, comp);
+    con(comp, split);
+    con(split, analyzer, 0, 0);
+    con(split, verbage, 1, 0);
+    con(verbage, reverb);
 
     osc.start(when);
     osc.stop(over);
-    setTimeout(() => {
-        osc.disconnect();
-        gain.disconnect();
-        comp.disconnect();
-        split.disconnect();
-        verbage.disconnect();
-    }, (over - t + 1) * 1000)
+    setTimeout(() => [osc, gain, comp, split, verbage].forEach(x => x.disconnect()), (over - t + 1) * 1000)
 };
 
 const bass = (tick, dur) => {
     const sing =  melody.bass.find(([x]) => x === tick);
     if (!sing) { return; }
-     // tick, dur, type, octave, note,    len,      vol, verb, attack, deflate
     play(tick, dur, "square", 1, sing[1], sing[2],  0.5, 0.7, 0.01, 0.98);
 };
 
 const drum = (tick, dur) => {
     const sing =  melody.notes.find(([x]) => x === tick);
     if (!sing) { return; }
-     // tick, dur, type,     octave,        note,    len,         vol, verb, attack, deflate
      play(tick, dur, "sawtooth", melody.octave, sing[1], sing[2], 0.7, 0.8, 0.005, 0.98);
 };
 
@@ -353,16 +425,15 @@ bus.on("draw@speaker", (dur) => {
         scheduled.delete(lasttick);
         lasttick = tick;
     }
-    if (active && analyzer) {
-        if (!scheduled.has(tick)) {
+    if (analyzer) {
+        if (active && !scheduled.has(tick)) {
             scheduled.add(tick);
             drum(tick, dur);
             bass(tick, dur);
         }
         analyzer.getByteTimeDomainData(data);
         [...data].forEach((v, i) => {
-            const a = (Math.abs(v - 127) / 128) * 6 | 0;
-            // const a = (Math.abs(v - 127) / 128)**1.05 * 6 | 0;
+            const a = (Math.abs(v - 127) / 128)**1.05 * 6 | 0;
             bus.emit("print@screen", 1 + i, 0, colorMap.buzz, transparent, 0.25 + (a/8), 216 + a);
         });
     }

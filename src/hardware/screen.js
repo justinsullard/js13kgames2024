@@ -68,9 +68,7 @@ bus.once("init", async ({ $screen, image }) => {
     $screen.style.boxShadow = `${theme.background} 0px 0px 2px 3px`;
     $screen.style.opacity = 1;
 
-    const gl = $screen.getContext("webgl2", {
-        premultipliedAlpha: false  // Ask for non-premultiplied alpha
-    });
+    const gl = $screen.getContext("webgl2", { premultipliedAlpha: false });
     const program = gl.createProgram();
     const vertexShader = makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
     const fragmentShader = makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
@@ -206,6 +204,13 @@ bus.once("init", async ({ $screen, image }) => {
             }
         }
     };
+    const clear = () => {
+        const fg = colorMap.text
+        const bg = transparent;
+        for (let c = 4800; c--;) {
+            transformData.set([...fg, ...bg, 0, 0], c * transformStride + 2);
+        }
+    }
 
     bus.on("draw@screen", draw);
     bus.on("print@screen", print);
@@ -213,4 +218,5 @@ bus.once("init", async ({ $screen, image }) => {
     bus.on("del@screen", del);
     bus.on("printf@screen", printf);
     bus.on("text@screen", text);
+    bus.on("clear@screen", clear);
 });

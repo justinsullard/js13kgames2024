@@ -6,8 +6,20 @@ console.log(voices);
 if (synth && voices) {
     bus.on("@say", (message = "Hello world!") => {
         const voice = new SpeechSynthesisUtterance(message);
+        voice.lang = "en-US";
         voice.pitch = 0;
         voice.rate = 0.75;
+        [
+            "boundary",
+            "end",
+            "error",
+            "mark",
+            "pause",
+            "resume",
+            "start"
+        ].forEach(ev => {
+            voice[`on${ev}`] = (...x) => bus.emit(`${ev}@say`, message);
+        });
         synth.speak(voice);
     });
     bus.on("login@voice", () => {
@@ -22,6 +34,6 @@ if (synth && voices) {
             "New password successfully set to: 'redacted for security reasons'.",
             "Congratulations, and welcome to the dumpster fire!",
             "Now, get to work, slacker."
-        ].forEach(x => bus.emit("@say", x))    
+        ].forEach(x => bus.emit("@say", x));
     });
 }

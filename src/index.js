@@ -6,6 +6,8 @@ import "./hardware/screen.js";
 import "./hardware/speaker.js";
 import "./hardware/voice.js";
 import "./grid/title.js";
+import "./grid/login.js";
+import "./grid/console.js";
 
 const $ = x => document.getElementById(x);
 
@@ -17,6 +19,7 @@ let state = "init";
 bus.on("@state", grid => {
     bus.emit(`close@${state}`);
     state = grid;
+    bus.emit("clear@screen");
     bus.emit(`open@${state}`);
 });
 bus.once("init", () => bus.emit("@state", "title"));
