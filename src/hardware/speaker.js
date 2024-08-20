@@ -331,7 +331,7 @@ const melodies = {
         ]).flat(),
     },
 };
-console.log({ scales, melodies });
+// console.log({ scales, melodies });
 
 let key = 0;
 let melody = melodies.codetastrophy;

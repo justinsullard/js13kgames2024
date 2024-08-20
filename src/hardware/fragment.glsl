@@ -4,13 +4,11 @@ precision mediump float;
 
 uniform mediump sampler2DArray uSampler;
 
-// uniform float time; // 0
-// uniform vec2 warp; // vec2(1.0 / 51.0, 1.0 / 46.0);
-uniform vec2 mask; // vec2(0.25, 0.9)
-uniform float fxmix; // 0.2
-uniform float brightness; // 0.06
-uniform float contrast; // 0.03
-uniform float saturation; // 0.0
+uniform vec2 mask;
+uniform float fxmix;
+uniform float brightness;
+uniform float contrast;
+uniform float saturation;
 
 in vec2 vTexCoord;
 in vec4 vFgColor;
@@ -18,7 +16,7 @@ in vec4 vBgColor;
 in float vAlpha;
 in float vDepth;
 
-vec2 res = vec2(8.0, 8.0); // Font texture size
+vec2 res = vec2(8.0, 8.0);
 const vec3 luminanceWeighting = vec3(0.2126, 0.7152, 0.0722);
 
 out vec4 fragColor;

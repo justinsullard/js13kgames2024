@@ -1,13 +1,7 @@
 #version 300 es
 #pragma vscode_glsllint_stage: vert
 
-// uniform float time; // 0
-uniform vec2 warp; // vec2(1.0 / 51.0, 1.0 / 46.0);
-// uniform vec2 mask; // vec2(0.25, 0.9)
-// uniform float fxmix; // 0.2
-// uniform float brightness; // 0.06
-// uniform float contrast; // 0.03
-// uniform float saturation; // 0.0
+uniform vec2 warp;
 
 layout(location=0) in vec4 aPosition;
 layout(location=1) in vec2 aTexCoord;

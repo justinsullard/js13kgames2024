@@ -11,7 +11,7 @@ const main = async () => {
     
     watch('./src', (filename) => {
         console.log('something changed with', filename);
-        build().then(() => console.log("Build complete")).catch(console.error);
+        build().then((ok) => console.log("Build", ok ? "success" : "failure")).catch(console.error);
     });
 
 };

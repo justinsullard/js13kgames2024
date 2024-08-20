@@ -195,6 +195,13 @@ I mostly played with the speaker today.
 
 Okay, it's time to actually get this game working. First step... username and password.
 
+### Day 6: 2024-08-19T11:00:00.000Z
+
+I got the start of a build working. It's only a little depressing that I'm already at 70.1% of the total 13k zip (9326 bytes currently), but that can is a problem that can be addressed soon enough.
+
+I attempted to use a glsl minifier but it did not seem to work. I think I have a better idea how to do the minification, once I get the code generation stuff working.
+
+I may have went overboard with the songs, but I also have some tricks to compress the data that I need to work on later. All in due time.
 
 ## References and Credits
 

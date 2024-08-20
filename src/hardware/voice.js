@@ -2,7 +2,7 @@ import bus from "./bus.js";
 
 const synth = window.speechSynthesis;
 let voices = synth?.getVoices();
-console.log(voices);
+// console.log(voices);
 if (synth && voices) {
     bus.on("@say", (message = "Hello world!") => {
         const voice = new SpeechSynthesisUtterance(message);

@@ -3,11 +3,11 @@ body {
     padding: 0;
     display: flex;
     place-content: center;
-    overflow: hidden;
+    overflow: hidden
 }
 body, canvas {
     background-color: #19100c;
-    cursor: none;
+    cursor: none
 }
 #screen {
     z-index: 1;
@@ -15,7 +15,7 @@ body, canvas {
     max-height: clamp(480px, 960px, 100vh);
     flex: 1;
     align-self: center;
-    opacity: 0;
+    opacity: 0
 }
 #pointy {
     pointer-events: none;
@@ -23,5 +23,5 @@ body, canvas {
     z-index: 0;
     top: 0;
     left: 0;
-    display: none;
+    display: none
 }

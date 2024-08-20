@@ -60,7 +60,7 @@ bus.on("draw@title", (dur) => {
             );
         }
     }
-    bus.emit("printf@screen", "v0.13.4", 40, 33, colorMap.code);
+    bus.emit("printf@screen", "v0.13.dev", 40, 33, colorMap.code);
     bus.emit("text@screen", "Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
 });
 
