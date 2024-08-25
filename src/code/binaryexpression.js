@@ -1,5 +1,5 @@
 import Expression from "./expression";
-export const BinaryOperators = Object.freeze([
+export const BinaryExpressionOperator = Object.freeze([
     "!==",
     "%",
     "&",
@@ -23,6 +23,6 @@ export const BinaryOperators = Object.freeze([
 ]);
 export default class BinaryExpression extends Expression {
     left = null; // Identifier, Literal, Expression
-    operator = "=="; // BinaryOperators
+    operator = "=="; // BinaryExpressionOperator
     right = null; // Expression, Literal, Identifier
 }

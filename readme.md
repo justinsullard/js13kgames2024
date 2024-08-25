@@ -67,9 +67,9 @@ Fix bugs.
         * [ ] Billing
         * [ ] Status Bar
         * [ ] Audio
-        * [ ] Logs
+        * [x] Console
         * [ ] Informant
-        * [ ] Input
+        * [x] Input
         * [x] Title
         * [ ] MainMenu
         * [ ] RepoMenu
@@ -202,6 +202,18 @@ I got the start of a build working. It's only a little depressing that I'm alrea
 I attempted to use a glsl minifier but it did not seem to work. I think I have a better idea how to do the minification, once I get the code generation stuff working.
 
 I may have went overboard with the songs, but I also have some tricks to compress the data that I need to work on later. All in due time.
+
+### Day 11: 2024-08-24T11:00:00.000Z
+
+So... I barely did anything over the last week besides work, be sick, and run errands.
+
+However, today I was able to make some real progress. There is so much refactoring and code golfing still to be done, but I wanted to get the basic login working, and then start playing with things in the Main Menu (not that the menu itself works).
+
+There is still much to accomplish, and the todo list isn't even up to date (there are even things that are done that aren't in the list, and some things in the list that need to be removed).
+
+Anywho, Codetastrophy v0.13.12214536904 is up now on <https://justinsullard.com/codetastrophy/> and in theory will remember you (if you don't `localStorage.clear()`) once you create a username, and will let you set a new password. Or will it?
+
+<img src="./devlogassets/Peek 2024-08-25 04-14.gif">
 
 ## References and Credits
 

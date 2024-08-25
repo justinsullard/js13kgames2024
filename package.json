@@ -1,11 +1,13 @@
 {
   "name": "codetastrophy",
-  "version": "0.13.07140015152",
+  "version": "0.13.12214536904",
   "description": "You are the cursor. Chug coffee. Throw code. Fix bugs.",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "lang": "node scripts/language.js",
+    "dict": "node scripts/dictionary.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@babel/parser": "^7.25.3",
     "canvas": "^2.11.2",
+    "categorized-words": "^1.0.0",
     "fs-extra": "^11.2.0",
     "recursive-watch": "^1.1.4",
     "roadroller": "^2.1.0",

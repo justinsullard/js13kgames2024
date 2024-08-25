@@ -1,13 +1,19 @@
 import bus from "./hardware/bus.js";
 import loadFont from "./font/image.js";
 
+import "./hardware/cursor.js";
+import "./hardware/keyboard.js";
 import "./hardware/mouse.js";
 import "./hardware/screen.js";
 import "./hardware/speaker.js";
 import "./hardware/voice.js";
+// import "./hardware/wakelock.js";
+import "./grid/achievements.js";
 import "./grid/title.js";
 import "./grid/login.js";
+import "./grid/mainmenu.js";
 import "./grid/console.js";
+import "./plugins/keycontrols.js";
 
 const $ = x => document.getElementById(x);
 

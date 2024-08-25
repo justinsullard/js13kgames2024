@@ -189,6 +189,9 @@ bus.once("init", async ({ $screen, image }) => {
     const move = (entity, x = 0, y = 0) => {
         transformData.set([x, y], (4800 + entity) * transformStride);
     };
+    const update = (entity, char = 0) => {
+        transformData.set([char], (4800 + entity) * transformStride + 11);
+    };
     const del = (x = 0, y = 0) => {
         print(x, y, transparent, transparent, 0, 0);
     };
@@ -199,9 +202,7 @@ bus.once("init", async ({ $screen, image }) => {
     };
     const text = (str = "", x = 0, y = 0, fg, bg, alpha) => {
         for (let c = str.length; c--;) {
-            if (str[c] !== " ") {
-                print(x + c, y, fg, bg, alpha, str.charCodeAt(c));
-            }
+            print(x + c, y, fg, bg, str[c] === " " ? 0 : alpha, str.charCodeAt(c));
         }
     };
     const clear = () => {
@@ -215,8 +216,13 @@ bus.once("init", async ({ $screen, image }) => {
     bus.on("draw@screen", draw);
     bus.on("print@screen", print);
     bus.on("move@screen", move);
+    bus.on("update@screen", update);
     bus.on("del@screen", del);
     bus.on("printf@screen", printf);
     bus.on("text@screen", text);
     bus.on("clear@screen", clear);
+    bus.on("report@screen", (which) => {
+        const offset = which * transformStride;
+        console.log("report", which, transformData.slice(offset, offset + transformStride));
+    });
 });

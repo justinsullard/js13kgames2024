@@ -427,9 +427,15 @@ bus.on("draw@speaker", (dur) => {
     }
     if (analyzer) {
         if (active && !scheduled.has(tick)) {
+            if (tick === 0) {
+                bus.emit("start@measure");
+            }
             scheduled.add(tick);
             drum(tick, dur);
             bass(tick, dur);
+            if (tick === 26) {
+                bus.emit("end@measure");
+            }
         }
         analyzer.getByteTimeDomainData(data);
         [...data].forEach((v, i) => {
@@ -438,3 +444,11 @@ bus.on("draw@speaker", (dur) => {
         });
     }
 });
+// TODO: Remove this
+window.shuffle = () => {
+    const list = [...Object.values(melodies)];
+    melody = list[(list.indexOf(melody) + 1) % list.length];
+    scale = scales[melody.scale] ?? scale;
+    key = melody.key ?? key;
+    bus.emit("@say", `Now playing ${melody.name}`);
+};

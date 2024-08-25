@@ -24,13 +24,22 @@ const roadrollerit = async (data) => {
     return firstLine + secondLine;
 }
 
+let busy = false;
+let queue = false;
 export const build = async () => {
     if (Date.now() >= jamend) {
         console.error("It's too late, the jam is over");
     }
+    if (busy) {
+        queue = true;
+        console.error("Dude, you're saving stuff too quick. I'll queue this one.");
+        return false;
+    }
+    busy = true;
     const timestamp = Date.now() - jamstart;
     const version = new Date(timestamp).toISOString().split("-").pop().replace(/\D+/g, "");
-
+    const timer = "Build Time";
+    console.time(timer);
     console.log(`building v0.13.${version}`);
     // clear the build folder
     await fs.emptyDir("../build/");
@@ -175,6 +184,15 @@ export const build = async () => {
 		await bundle.close();
 	}
     if (buildFailed) {
+        if (queue) {
+            setTimeout(() => {
+                busy = false;
+                queue = false;
+                build();            
+            }, 10);
+        } else {
+            busy = false;
+        }
         return false;
     }
 
@@ -235,6 +253,17 @@ export const build = async () => {
     const bytes = buff.length;
     const percent = (bytes / zipmax * 100).toFixed(1);
     console.log(`Built zip ${bytes}/${zipmax} bytes (${percent}%)`);
+    console.timeEnd(timer);
+    if (queue) {
+        setTimeout(() => {
+            busy = false;
+            queue = false;
+            build();            
+        }, 10);
+    } else {
+        console.log("Build ready\x07");
+        busy = false;
+    }
     return true;
 };
 export default build;
