@@ -11,26 +11,26 @@ layout(location=4) in vec4 aBgColor;
 layout(location=5) in float aAlpha;
 layout(location=6) in float aDepth;
 
-out vec2 vTexCoord;
-out vec4 vFgColor;
-out vec4 vBgColor;
-out float vAlpha;
-out float vDepth;
+out vec2 vT;
+out vec4 vF;
+out vec4 vB;
+out float vA;
+out float vD;
 
 void main() {
-    vTexCoord = aTexCoord;
-    vFgColor = aFgColor;
-    vBgColor = aBgColor;
-    vAlpha = aAlpha;
-    vDepth = aDepth;
-    vec4 pos = vec4(aPosition.xyz + aOffset, 1.0);
-    vec2 shift = vec2(1.0 + (pos.y * pos.y) * warp.x, 1.0 + (pos.x * pos.x) * warp.y);
-    float len = max(abs(pos.x), abs(pos.y));
+    vT = aTexCoord;
+    vF = aFgColor;
+    vB = aBgColor;
+    vA = aAlpha;
+    vD = aDepth;
+    vec4 p = vec4(aPosition.xyz + aOffset, 1.0);
+    vec2 shift = vec2(1.0 + (p.y * p.y) * warp.x, 1.0 + (p.x * p.x) * warp.y);
+    float len = max(abs(p.x), abs(p.y));
     if (len > 1.0) {
         shift /= len * len;
-        vFgColor.a /= len * len * 2.0;
-        vBgColor.a = 0.0;
+        vF.a /= len * len * 2.0;
+        vB.a = 0.0;
     }
-    pos.xy /= shift;
-    gl_Position = pos;
+    p.xy /= shift;
+    gl_Position = p;
 }

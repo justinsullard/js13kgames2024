@@ -177,7 +177,9 @@ export const build = async () => {
 	} catch (error) {
 		buildFailed = true;
 		// do some error reporting
-		console.error(error);
+		console.error("Build error\x07", error);
+        setTimeout(() => console.error("You broke it!\x07"), 500);
+        setTimeout(() => console.error("Fix it, dude!\x07"), 1000);
 	}
 	if (bundle) {
 		// closes the bundle
@@ -193,6 +195,7 @@ export const build = async () => {
         } else {
             busy = false;
         }
+        console.timeEnd(timer);
         return false;
     }
 

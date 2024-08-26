@@ -3,15 +3,36 @@ import { colorMap, transparent } from "../hardware/screen.js";
 const { buzz, hardware, pickup } = colorMap;
 
 // Key Controls
-let enabled = false;
-bus.on("enable@keycontrols", x => enabled = true);
-bus.on("disable@keycontrols", x => enabled = false);
-
 const keys = {};
-bus.on("keydown", ({key}) => keys[key] = true);
-bus.on("keyup", ({key}) => keys[key] = false);
+const clearkeys = () => {
+    Object.keys(keys).forEach(k => keys[k] = false);
+    // console.log("Cleared keys due to visibility", keys, Object.values(keys).find(x => x) ? Math.random() * 7 | 0 : 0);
+}
+let enabled = false;
+bus.on("enable@keycontrols", x => {
+    enabled = true;
+    clearkeys();
+});
+bus.on("disable@keycontrols", x => {
+    enabled = false;
+    clearkeys();
+});
 
-const t = 40;
+bus.on("keydown", ({key}) => {
+    keys[key] = true;
+    // console.log("keydown", key);
+});
+bus.on("keyup", ({key}) => {
+    keys[key] = false;
+    // console.log("keyup", key);
+});
+bus.on("visibility", visible => {
+    // console.log("visibilty", visible);
+    clearkeys();
+    // setTimeout(clearkeys, 100);
+});
+
+const t = 39;
 const l = 50;
 
 bus.on("draw@keycontrols", (dur) => {
@@ -30,8 +51,5 @@ bus.on("draw@keycontrols", (dur) => {
     bus.emit("print@screen", l + 9, t, pickup, transparent, 1, 0xc3); // Plugin Key
     bus.emit("print@screen", l + 10, t, hardware, transparent, 1, 0xe0); // Key Control Plugin
     bus.emit("print@screen", l + 11, t, hardware, transparent, 1, 0xd8 + energy); // Wire
-    bus.emit("text@screen", "Key Control", l + 12, t, hardware);
+    bus.emit("text@screen", "Key Controls", l + 12, t, hardware);
 });
-// Top is 39
-// const w = 49;
-// const h = 20;

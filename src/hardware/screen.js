@@ -60,6 +60,16 @@ export const defaultUniforms = () => ({
     saturation: 0,
 });
 
+/*
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+*/
+const tp = (gl, ...x) => gl.texParameteri(...x);
+
+
 bus.once("init", async ({ $screen, image }) => {
 
     vertexShaderSrc = vertexShaderSrc || await loadShader("./hardware/vertex.glsl");
@@ -69,14 +79,20 @@ bus.once("init", async ({ $screen, image }) => {
     $screen.style.opacity = 1;
 
     const gl = $screen.getContext("webgl2", { premultipliedAlpha: false });
+    const GLT2A = gl.TEXTURE_2D_ARRAY;
+    const GLCTE = gl.CLAMP_TO_EDGE;
+    const GLAB = gl.ARRAY_BUFFER;
+    const GLF = gl.FLOAT;
+    const GLSD = gl.STATIC_DRAW;
+    
     const program = gl.createProgram();
     const vertexShader = makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
     const fragmentShader = makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.debug(gl.getShaderInfoLog(vertexShader));
-        console.debug(gl.getShaderInfoLog(fragmentShader));
-    }
+    // if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    //     console.debug(gl.getShaderInfoLog(vertexShader));
+    //     console.debug(gl.getShaderInfoLog(fragmentShader));
+    // }
     gl.useProgram(program);
 
     const pright = wscale - 1;
@@ -117,30 +133,30 @@ bus.once("init", async ({ $screen, image }) => {
     ].flat());
 
     const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
-    gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGBA, 8, 8, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.bindTexture(GLT2A, texture);
+    gl.texImage3D(GLT2A, 0, gl.RGBA, 8, 8, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(GLT2A);
+    tp(gl, GLT2A, gl.TEXTURE_WRAP_S, GLCTE);
+    tp(gl, GLT2A, gl.TEXTURE_WRAP_T, GLCTE);
+    tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+    tp(gl, GLT2A, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
     const modelBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, modelBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData, gl.STATIC_DRAW);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 16, 0);
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 16, 8);
+    gl.bindBuffer(GLAB, modelBuffer);
+    gl.bufferData(GLAB, modelData, GLSD);
+    gl.vertexAttribPointer(0, 2, GLF, false, 16, 0);
+    gl.vertexAttribPointer(1, 2, GLF, false, 16, 8);
     gl.enableVertexAttribArray(0);
     gl.enableVertexAttribArray(1);
 
     const transformBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, transformBuffer);
+    gl.bindBuffer(GLAB, transformBuffer);
 
-    gl.vertexAttribPointer(2, 2, gl.FLOAT, false, 48, 0); // offset x and y
-    gl.vertexAttribPointer(3, 4, gl.FLOAT, false, 48, 8); // aFgColor
-    gl.vertexAttribPointer(4, 4, gl.FLOAT, false, 48, 24); // aBgColor
-    gl.vertexAttribPointer(5, 1, gl.FLOAT, false, 48, 40); // aAlpha
-    gl.vertexAttribPointer(6, 1, gl.FLOAT, false, 48, 44); // aDepth (char)
+    gl.vertexAttribPointer(2, 2, GLF, false, 48, 0); // offset x and y
+    gl.vertexAttribPointer(3, 4, GLF, false, 48, 8); // aFgColor
+    gl.vertexAttribPointer(4, 4, GLF, false, 48, 24); // aBgColor
+    gl.vertexAttribPointer(5, 1, GLF, false, 48, 40); // aAlpha
+    gl.vertexAttribPointer(6, 1, GLF, false, 48, 44); // aDepth (char)
 
     // Confirm if these are actually necessary.
     gl.vertexAttribDivisor(2, 1);
@@ -178,7 +194,7 @@ bus.once("init", async ({ $screen, image }) => {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        gl.bufferData(gl.ARRAY_BUFFER, transformData, gl.STATIC_DRAW);
+        gl.bufferData(GLAB, transformData, GLSD);
 
         gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, 5059); // 4800 + 256 + 3
     };

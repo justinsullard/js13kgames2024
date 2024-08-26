@@ -2,6 +2,8 @@ import { theme } from "./screen.js";
 import bus from "./bus.js";
 
 const pointer = [-16, -16];
+let cx = -1;
+let cy = -1;
 bus.on("mousemove", e => [pointer[0], pointer[1]] = [e.clientX, e.clientY]);
 
 bus.once("init", ({ $screen, $pointy, image }) => {
@@ -15,7 +17,7 @@ bus.once("init", ({ $screen, $pointy, image }) => {
     pointy.drawImage(image, 0, 232 * 8, 8, 8, 0, 0, 16, 16);
     $pointy.style.display = "block";
     "mousemove,click,mousedown,mouseup".split(",")
-        .forEach(x => window.addEventListener(x, (e) => bus.emit(x, e)));
+        .forEach(x => window.addEventListener(x, (e) => bus.emit(x, e, cx, cy)));
 
     const move = () => {
         const { clientWidth, clientHeight, offsetLeft, offsetTop } = $screen;
@@ -23,8 +25,8 @@ bus.once("init", ({ $screen, $pointy, image }) => {
         const dy = clientHeight / 480;
         const uvx = (pointer[0] - offsetLeft) / clientWidth;
         const uvy = (pointer[1] - offsetTop) / clientHeight;
-        const cx = uvx * 80 | 0;
-        const cy = uvy * 60 | 0;
+        cx = uvx * 80 | 0;
+        cy = uvy * 60 | 0;
         $pointy.style.left = pointer[0] + "px";
         $pointy.style.top = pointer[1] + "px";
         $pointy.style.width = (dx * 8).toFixed(2) + "px";

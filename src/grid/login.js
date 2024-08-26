@@ -73,6 +73,7 @@ const passwordPrompt = () => {
                 bus.emit("achievement@user", "samuraiocertificate");
             }
             update("password", "true");
+            bus.emit("melody@speaker", "hi");
             queue.push(
                 ["New password successfully set to:"],
                 ["redacted for security reasons", "*************"],
@@ -83,6 +84,7 @@ const passwordPrompt = () => {
         } else {
             attempts++;
             if (reason && !user.invalidations.includes(i)) {
+                bus.emit("melody@speaker", "oops");
                 update("invalidations", i);
             }
             if (!reason) {
@@ -136,7 +138,6 @@ bus.on("open@login", () => {
             const tail = Date.now().toString(16).slice(-6);
             user.desired = x;
             update("username", "n00b13" + tail);
-            console.log("Username set");
             queue.push(
                 ["Ha ha."],
                 ["Ha ha ha."],

@@ -46,7 +46,7 @@ export class Input {
         "keydown,keypress".split(",").forEach(x => bus.on(x, this[x]));
     }
     norm() {
-        this.cursor = Math.max(0, Math.min(this.value.length + 1, this.max, this.cursor));
+        this.cursor = Math.max(0, Math.min(this.value.length, this.max, this.cursor));
     }
     submit() {
         if (!this.complete && this.value.length >= this.min) {

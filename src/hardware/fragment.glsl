@@ -2,7 +2,7 @@
 #pragma vscode_glsllint_stage: frag
 precision mediump float;
 
-uniform mediump sampler2DArray uSampler;
+uniform mediump sampler2DArray uSam;
 
 uniform vec2 mask;
 uniform float fxmix;
@@ -10,36 +10,36 @@ uniform float brightness;
 uniform float contrast;
 uniform float saturation;
 
-in vec2 vTexCoord;
-in vec4 vFgColor;
-in vec4 vBgColor;
-in float vAlpha;
-in float vDepth;
+in vec2 vT;
+in vec4 vF;
+in vec4 vB;
+in float vA;
+in float vD;
 
 vec2 res = vec2(8.0, 8.0);
-const vec3 luminanceWeighting = vec3(0.2126, 0.7152, 0.0722);
+const vec3 lum = vec3(0.2126, 0.7152, 0.0722);
 
-out vec4 fragColor;
+out vec4 fc; // fragColor
 
-vec4 Mask(vec2 pos) {
-    pos.x += pos.y * 3.0;
-    vec4 masked = vec4(mask.x, mask.x, mask.x, 1.0);
-    pos.x = fract(pos.x / 6.0);
-    if (pos.x < 0.333) masked.r = mask.y;
-    else if (pos.x < 0.666) masked.g = mask.y;
-    else masked.b = mask.y;
-    return masked;
+vec4 M(vec2 p) {
+    p.x += p.y * 3.0;
+    vec4 m = vec4(mask.x, mask.x, mask.x, 1.0);
+    p.x = fract(p.x / 6.0);
+    if (p.x < 0.333) m.r = mask.y;
+    else if (p.x < 0.666) m.g = mask.y;
+    else m.b = mask.y;
+    return m;
 }
 
 void main() {
-    if (vAlpha <= 0.0) discard;
-    vec4 texColor = texture(uSampler, vec3(vTexCoord, vDepth));
-    fragColor = (vFgColor * texColor) + (vBgColor * (vec4(1.0) - texColor));
-    if (fragColor.a <= 0.0) discard;
-    vec4 mask = Mask(vTexCoord * res);
-    fragColor = mix(fragColor, mask, fxmix);
-    fragColor.rgb = fragColor.rgb + brightness;
-    fragColor.rgb = 0.5 + (contrast + 1.0) * (fragColor.rgb - 0.5);
-    fragColor.rgb = mix(vec3(dot(fragColor.rgb, luminanceWeighting)), fragColor.rgb, 1.0 + saturation);
-    fragColor.a *= vAlpha;
+    if (vA <= 0.0) discard;
+    vec4 tC = texture(uSam, vec3(vT, vD));
+    fc = (vF * tC) + (vB * (vec4(1.0) - tC));
+    if (fc.a <= 0.0) discard;
+    vec4 mask = M(vT * res);
+    fc = mix(fc, mask, fxmix);
+    fc.rgb = fc.rgb + brightness;
+    fc.rgb = 0.5 + (contrast + 1.0) * (fc.rgb - 0.5);
+    fc.rgb = mix(vec3(dot(fc.rgb, lum)), fc.rgb, 1.0 + saturation);
+    fc.a *= vA;
 }

@@ -13,7 +13,30 @@ import "./grid/title.js";
 import "./grid/login.js";
 import "./grid/mainmenu.js";
 import "./grid/console.js";
+import "./grid/loc.js";
 import "./plugins/keycontrols.js";
+import "./plugins/informant.js";
+import "./plugins/welcomemat.js";
+import listen from "./util/listen.js";
+
+document.addEventListener("visibilitychange", (...x) => {
+    bus.emit("visibility", document.hidden);
+});
+listen("blur", () => bus.emit("visibility", false));
+listen("focus", () => bus.emit("visibility", true));
+
+// Maybe put this in to be cheaky about the devtools
+// const devtools = function () {};
+// devtools.toString = () => {
+//   devtools.opened = true;
+//   const message = "What, are you trying to cheat or something?";
+//   setTimeout(() => {
+//       bus.emit("log@console", message);
+//       bus.emit("@say", message);
+//   }, 1000);
+//   return message;
+// }
+// console.log("DevTools: %s", devtools);
 
 const $ = x => document.getElementById(x);
 

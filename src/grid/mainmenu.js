@@ -8,15 +8,15 @@ bus.on("update@user", x => user = x);
 let cursor = [0, 0];
 const move = {
     Left: () => cursor[0] = Math.max(0, cursor[0] - 1),
-    Right: () => cursor[0] = Math.min(37, cursor[0] + 1),
+    Right: () => cursor[0] = Math.min(36, cursor[0] + 1),
     Up: () => cursor[1] = Math.max(0, cursor[1] - 1),
-    Down: () => cursor[1] = Math.min(37, cursor[1] + 1),
+    Down: () => cursor[1] = Math.min(36, cursor[1] + 1),
 };
 const keydown = ({ key }) => {
     const dir = move[key.split("Arrow").pop()];
     if (dir) {
         dir();
-        bus.emit("trauma@cursor", 4);
+        bus.emit("trauma@cursor", 2 + Math.random() * 2.5);
     }
 };
 
@@ -24,7 +24,8 @@ bus.on("open@mainmenu", () => {
     bus.emit("melody@speaker", "codetastrophy");
     bus.emit("enable@keyboard");
     bus.emit("enable@keycontrols");
-    bus.emit("log@console", "Main Menu");
+    bus.emit("enable@informant");
+    bus.emit("log@console", "½ Main Menu");
     bus.emit("@say", "Main Menu");
     bus.on("keydown", keydown);
 });
@@ -33,6 +34,7 @@ bus.on("close@mainmenu", () => {
     queue.splice(0, queue.length);
     bus.emit("disable@keyboard");
     bus.emit("disable@keycontrols");
+    bus.emit("disable@informant");
     bus.off("keydown", keydown);
 });
 bus.on("draw@mainmenu", (dur) => {
@@ -44,5 +46,7 @@ bus.on("draw@mainmenu", (dur) => {
     // Achievements
     bus.emit("draw@console", dur);
     bus.emit("draw@keycontrols", dur);
+    bus.emit("draw@informant", dur);
     bus.emit("draw@cursor", dur, 4 + cursor[0], 1 + cursor[1]);
+    bus.emit("draw@loc", dur, ...cursor);
 });

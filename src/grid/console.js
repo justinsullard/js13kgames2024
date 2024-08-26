@@ -6,9 +6,9 @@ const autocolor = {
     "½": colorMap.name,
 }
 
-const t = 40;
+const t = 39;
 const w = 49;
-const h = 19;
+const h = 20;
 const loglines = [];
 let dirty = false;
 

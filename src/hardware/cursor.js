@@ -8,6 +8,6 @@ bus.once("init", ({ $screen, $pointy, image }) => {
         bus.emit("move@screen", 257, x / 40, -y / 30);
         trauma = Math.max(0, trauma - 0.125);
     };
-    bus.on("trauma@cursor", (x = 1) => trauma = Math.max(0, Math.min(6, x)));
+    bus.on("trauma@cursor", (x = 1) => trauma = Math.max(0, Math.min(7, x)));
     bus.on("draw@cursor", draw);
 });
