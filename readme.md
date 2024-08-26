@@ -215,6 +215,14 @@ Anywho, Codetastrophy v0.13.12214536904 is up now on <https://justinsullard.com/
 
 <img src="./devlogassets/Peek 2024-08-25 04-14.gif">
 
+### Day 12: 2024-08-25T11:00:00.000Z
+
+Not a great deal of progress today, but I made some. I did a little golfing, and played around with getting more of the interface elements built out. Still so much to do, but I am finally feeling like I am making some progress now that there is actual interaction and the ability to move around in the (still empty) Main Menu. I also integrated some semi-randomizedd animations for the cursor to use the available character set some.
+
+<img src="./devlogassets/Peek 2024-08-25 17-04.gif">
+
+<img src="./devlogassets/Peek 2024-08-25 21-14.gif">
+
 ## References and Credits
 
 There are a large number of sources that I could name, but most directly over the last couple of months, and the development of this game, these specific sources proved valuable in my efforts to implement **Codetastrophy**.
