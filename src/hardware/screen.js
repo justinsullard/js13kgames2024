@@ -1,5 +1,5 @@
 import stripe from "../util/stripe.js";
-import bus from "./bus.js";
+import { on, once } from "./bus.js";
 
 const loadShader = x => fetch(x).then(r => r.text());
 
@@ -11,7 +11,7 @@ const makeShader = (gl, type, program, src) => {
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
     gl.attachShader(program, shader);
-    return shader;
+    // return shader;
 };
 
 export const theme = {
@@ -48,7 +48,43 @@ export const charfade = [46,44,30,96,39,58,45,13,59,11,31,19,10,94,8,17,18,28,29
 export const wscale = 1/40;
 export const hscale = 1/30;
 
+const pright = wscale - 1;
+const pbottom = 1 - hscale;
+const modelData = new Float32Array([
+    // position       texCoord
+    -1, 1,            0, 0,
+    pright, 1,        1, 0,
+    -1, pbottom,      0, 1,
+
+    pright, pbottom,  1, 1,
+    -1, pbottom,      0 ,1,
+    pright, 1,        1, 0
+]);
+
 export const transformStride = 12;
+const transformData = new Float32Array([
+    ...stripe(4800, i => [ // TODO: Break these up into char objects
+        (i % 80) * wscale, // aOffset.x
+        ((i / 80) | 0) * -hscale, // aOffset.y 
+        ...transparent, // aFgColor
+        ...transparent, // aBgColor
+        1, // aAlpha
+        0 // aDepth (char)
+    ]),
+    ...[ // TODO: Break these up into bug objects, etc.
+        ...stripe(256, () => [0, transparent, 0]), // blank bugs
+        [220, colorMap.smell, 1], // dumpster fire
+        [208, colorMap.buzz, 1], // cursor
+        [232, colorMap.buzz, 1] // mouse
+    ].map(([i, color, a]) => [
+        -2, // aOffset.x
+        -2, // aOffset.y 
+        ...color, // aFgColor
+        ...transparent, // aBgColor
+        a, // aAlpha
+        i // aDepth (char)
+    ])
+].flat());
 
 export const defaultUniforms = () => ({
     time: 0,
@@ -59,18 +95,72 @@ export const defaultUniforms = () => ({
     contrast: 0.03,
     saturation: 0,
 });
+const uniforms = defaultUniforms();
 
-/*
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-*/
 const tp = (gl, ...x) => gl.texParameteri(...x);
+let gl;
+let uniformLocations;
+let GLT2A;
+let GLCTE;
+let GLAB;
+let GLF;
+let GLSD;
 
 
-bus.once("init", async ({ $screen, image }) => {
+export const draw = (t = 0) => {
+    uniforms.time = t;
+
+    [...Object.entries(uniforms)]
+        .forEach(([k, v]) => gl[v?.length ? "uniform2fv" : "uniform1f"](uniformLocations[k], v));
+
+    gl.clearColor(...colorMap.background);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    gl.bufferData(GLAB, transformData, GLSD);
+
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, 5059); // 4800 + 256 + 3
+};
+export const print = (x = 0, y = 0, fg = colorMap.text, bg = transparent, alpha = 1, char = 0) => {
+    const offset = (x + y * 80) * transformStride;
+    transformData.set([...fg, ...bg, alpha, char], offset + 2);
+};
+export const move = (entity, x = 0, y = 0) => {
+    transformData.set([x, y], (4800 + entity) * transformStride);
+};
+export const update = (entity, char = 0) => {
+    transformData.set([char], (4800 + entity) * transformStride + 11);
+};
+export const del = (x = 0, y = 0) => {
+    print(x, y, transparent, transparent, 0, 0);
+};
+export const printf = (str = "", x = 0, y = 0, fg, bg, alpha) => {
+    for (let c = str.length; c--;) {
+        print(x + c, y, fg, bg, alpha, str.charCodeAt(c));
+    }
+};
+export const text = (str = "", x = 0, y = 0, fg, bg, alpha) => {
+    for (let c = str.length; c--;) {
+        print(x + c, y, fg, bg, str[c] === " " ? 0 : alpha, str.charCodeAt(c));
+    }
+};
+export const clear = () => {
+    const fg = colorMap.text
+    const bg = transparent;
+    for (let c = 4800; c--;) {
+        transformData.set([...fg, ...bg, 0, 0], c * transformStride + 2);
+    }
+}
+export const report = (c) => {
+    const offset = c * transformStride;
+    return transformData.slice(offset, offset + transformStride);
+}
+
+once("init", async ({ $screen, image }) => {
 
     vertexShaderSrc = vertexShaderSrc || await loadShader("./hardware/vertex.glsl");
     fragmentShaderSrc = fragmentShaderSrc || await loadShader("./hardware/fragment.glsl");
@@ -78,16 +168,18 @@ bus.once("init", async ({ $screen, image }) => {
     $screen.style.boxShadow = `${theme.background} 0px 0px 2px 3px`;
     $screen.style.opacity = 1;
 
-    const gl = $screen.getContext("webgl2", { premultipliedAlpha: false });
-    const GLT2A = gl.TEXTURE_2D_ARRAY;
-    const GLCTE = gl.CLAMP_TO_EDGE;
-    const GLAB = gl.ARRAY_BUFFER;
-    const GLF = gl.FLOAT;
-    const GLSD = gl.STATIC_DRAW;
+    gl = $screen.getContext("webgl2", { premultipliedAlpha: false });
+    GLT2A = gl.TEXTURE_2D_ARRAY;
+    GLCTE = gl.CLAMP_TO_EDGE;
+    GLAB = gl.ARRAY_BUFFER;
+    GLF = gl.FLOAT;
+    GLSD = gl.STATIC_DRAW;
     
     const program = gl.createProgram();
-    const vertexShader = makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
-    const fragmentShader = makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
+    // const vertexShader = makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
+    // const fragmentShader = makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
+    makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
+    makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
     gl.linkProgram(program);
     // if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     //     console.debug(gl.getShaderInfoLog(vertexShader));
@@ -95,42 +187,6 @@ bus.once("init", async ({ $screen, image }) => {
     // }
     gl.useProgram(program);
 
-    const pright = wscale - 1;
-    const pbottom = 1 - hscale;
-    const modelData = new Float32Array([
-        // position       texCoord
-        -1, 1,            0, 0,
-        pright, 1,        1, 0,
-        -1, pbottom,      0, 1,
-    
-        pright, pbottom,  1, 1,
-        -1, pbottom,      0 ,1,
-        pright, 1,        1, 0
-    ]);
-    
-    const transformData = new Float32Array([
-        ...stripe(4800, i => [
-            (i % 80) * wscale, // aOffset.x
-            ((i / 80) | 0) * -hscale, // aOffset.y 
-            ...transparent, // aFgColor
-            ...transparent, // aBgColor
-            1, // aAlpha
-            0 // aDepth (char)
-        ]),
-        ...[
-            ...stripe(256, () => [0, transparent, 0]), // blank bugs
-            [220, colorMap.smell, 1], // dumpster fire
-            [208, colorMap.buzz, 1], // cursor
-            [232, colorMap.buzz, 1] // mouse
-        ].map(([i, color, a]) => [
-            -2, // aOffset.x
-            -2, // aOffset.y 
-            ...color, // aFgColor
-            ...transparent, // aBgColor
-            a, // aAlpha
-            i // aDepth (char)
-        ])
-    ].flat());
 
     const texture = gl.createTexture();
     gl.bindTexture(GLT2A, texture);
@@ -171,8 +227,7 @@ bus.once("init", async ({ $screen, image }) => {
     gl.enableVertexAttribArray(5);
     gl.enableVertexAttribArray(6);
 
-    const uniforms = defaultUniforms();
-    const uniformLocations = Object.entries(uniforms).reduce(
+    uniformLocations = Object.entries(uniforms).reduce(
         (r, [name, i]) => {
             r[name] = gl.getUniformLocation(program, name);
             return r;
@@ -180,65 +235,13 @@ bus.once("init", async ({ $screen, image }) => {
         {}
     );
 
-    const draw = (t = 0) => {
-        uniforms.time = t;
-
-        [...Object.entries(uniforms)]
-            .forEach(([k, v]) => gl[v?.length ? "uniform2fv" : "uniform1f"](uniformLocations[k], v));
-
-        gl.clearColor(...colorMap.background);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-        gl.bufferData(GLAB, transformData, GLSD);
-
-        gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, 5059); // 4800 + 256 + 3
-    };
-    const print = (x = 0, y = 0, fg = colorMap.text, bg = transparent, alpha = 1, char = 0) => {
-        const offset = (x + y * 80) * transformStride;
-        transformData.set([...fg, ...bg, alpha, char], offset + 2);
-    };
-    const move = (entity, x = 0, y = 0) => {
-        transformData.set([x, y], (4800 + entity) * transformStride);
-    };
-    const update = (entity, char = 0) => {
-        transformData.set([char], (4800 + entity) * transformStride + 11);
-    };
-    const del = (x = 0, y = 0) => {
-        print(x, y, transparent, transparent, 0, 0);
-    };
-    const printf = (str = "", x = 0, y = 0, fg, bg, alpha) => {
-        for (let c = str.length; c--;) {
-            print(x + c, y, fg, bg, alpha, str.charCodeAt(c));
-        }
-    };
-    const text = (str = "", x = 0, y = 0, fg, bg, alpha) => {
-        for (let c = str.length; c--;) {
-            print(x + c, y, fg, bg, str[c] === " " ? 0 : alpha, str.charCodeAt(c));
-        }
-    };
-    const clear = () => {
-        const fg = colorMap.text
-        const bg = transparent;
-        for (let c = 4800; c--;) {
-            transformData.set([...fg, ...bg, 0, 0], c * transformStride + 2);
-        }
-    }
-
-    bus.on("draw@screen", draw);
-    bus.on("print@screen", print);
-    bus.on("move@screen", move);
-    bus.on("update@screen", update);
-    bus.on("del@screen", del);
-    bus.on("printf@screen", printf);
-    bus.on("text@screen", text);
-    bus.on("clear@screen", clear);
-    bus.on("report@screen", (which) => {
-        const offset = which * transformStride;
-        console.log("report", which, transformData.slice(offset, offset + transformStride));
-    });
+    on("draw@screen", draw);
+    on("print@screen", print);
+    on("move@screen", move);
+    on("update@screen", update);
+    on("del@screen", del);
+    on("printf@screen", printf);
+    on("text@screen", text);
+    on("clear@screen", clear);
+    on("report@screen", (c) => console.log("report", c, report(c)));
 });

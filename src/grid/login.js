@@ -1,4 +1,4 @@
-import bus from "../hardware/bus.js";
+import { emit, on, once} from "../hardware/bus.js";
 import { open, save } from "../util/storage.js";
 
 const user = open("user") ?? {
@@ -17,10 +17,10 @@ const update = (k, v) => {
         user[k] = v;
     }
     save("user", user);
-    bus.emit("update@user", user);
+    emit("update@user", user);
 }
-bus.on("achievement@user", (x) => update("achievements", x));
-bus.once("init", update);
+on("achievement@user", (x) => update("achievements", x));
+once("init", update);
 
 const reasons = [
     ["Triskaidekaphobia!", x => (x.length === 13 || x.toLowerCase() === "thirteen" || x.includes("13")), "What, do you have triskaidekaphobia"],
@@ -53,38 +53,38 @@ const step = () => {
     const [say, show] = queue.shift() ?? [];
     if (typeof say === "string") {
         current = say;
-        bus.emit("@say", say);
-        bus.emit("log@console", show ?? say);
+        emit("@say", say);
+        emit("log@console", show ?? say);
     } else if (say) {
         say();
     } else {
         current = null;
     }
 };
-bus.on("end@say", m => m === current && step());
+on("end@say", m => m === current && step());
 let attempts = 0;
 const passwordPrompt = () => {
-    queue.push([() => bus.emit("input@console", "password", 32, 0, true)]);
-    bus.once("@output", x => {
+    queue.push([() => emit("input@console", "password", 32, 0, true)]);
+    once("@output", x => {
         let reason = validate(x);
         const i = reasons.indexOf(reason);
         if ((!x || !reason) && attempts >= 2) {
             if (user.invalidations.length === reasons.length) {
-                bus.emit("achievement@user", "samuraiocertificate");
+                emit("achievement@user", "samuraiocertificate");
             }
             update("password", "true");
-            bus.emit("melody@speaker", "hi");
+            emit("melody@speaker", "hi");
             queue.push(
                 ["New password successfully set to:"],
                 ["redacted for security reasons", "*************"],
                 ["Congratulations, and welcome to the dumpster fire!"],
                 ["Now, get to work, slacker."],
-                [() => bus.emit("@state", "mainmenu")]
+                [() => emit("@state", "mainmenu")]
             );
         } else {
             attempts++;
             if (reason && !user.invalidations.includes(i)) {
-                bus.emit("melody@speaker", "oops");
+                emit("melody@speaker", "oops");
                 update("invalidations", i);
             }
             if (!reason) {
@@ -101,12 +101,12 @@ const passwordPrompt = () => {
     step();
 };
 
-bus.on("open@login", () => {
-    bus.emit("melody@speaker", "hi");
-    bus.emit("enable@keyboard");
-    bus.emit("enable@keycontrols");
-    // bus.emit("log@console", `½ ${stripe(7, i => String.fromCharCode(i+144)).join("")}`);
-    bus.emit("log@console", `½ codetastrophy`);
+on("open@login", () => {
+    emit("melody@speaker", "hi");
+    emit("enable@keyboard");
+    emit("enable@keycontrols");
+    // emit("log@console", `½ ${stripe(7, i => String.fromCharCode(i+144)).join("")}`);
+    emit("log@console", `½ codetastrophy`);
     queue.push(["Welcome to code-tastrophy", "Welcome to codetastrophy!"]);
     if (user.username) {
         update("tail", user.username.split("b13").pop());
@@ -125,16 +125,16 @@ bus.on("open@login", () => {
         } else {
             queue.push(
                 ["Welcome back to the dumpster fire!"],
-                [() => bus.emit("@state", "mainmenu")]
+                [() => emit("@state", "mainmenu")]
             );
 
         }
     } else {
         queue.push(
             ["Input your desired username, then press Enter."],
-            [() => bus.emit("input@console", "username", 32, 2)]
+            [() => emit("input@console", "username", 32, 2)]
         );
-        bus.once("@output", x => {
+        once("@output", x => {
             const tail = Date.now().toString(16).slice(-6);
             user.desired = x;
             update("username", "n00b13" + tail);
@@ -151,14 +151,14 @@ bus.on("open@login", () => {
     }
     step();
 });
-bus.on("close@login", () => {
+on("close@login", () => {
     current = null;
     queue.splice(0, queue.length);
-    bus.emit("disable@keyboard")
-    bus.emit("disable@keycontrols")
+    emit("disable@keyboard")
+    emit("disable@keycontrols")
 });
 
-bus.on("draw@login", (dur) => {
-    bus.emit("draw@console", dur);
-    bus.emit("draw@keycontrols", dur);
+on("draw@login", (dur) => {
+    emit("draw@console", dur);
+    emit("draw@keycontrols", dur);
 });

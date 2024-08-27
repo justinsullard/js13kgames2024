@@ -1,12 +1,12 @@
-import { theme } from "./screen.js";
-import bus from "./bus.js";
+import { theme, move } from "./screen.js";
+import { on, once, emit} from "./bus.js";
 
 const pointer = [-16, -16];
 let cx = -1;
 let cy = -1;
-bus.on("mousemove", e => [pointer[0], pointer[1]] = [e.clientX, e.clientY]);
+on("mousemove", e => [pointer[0], pointer[1]] = [e.clientX, e.clientY]);
 
-bus.once("init", ({ $screen, $pointy, image }) => {
+once("init", ({ $screen, $pointy, image }) => {
     $pointy.width = 16;
     $pointy.height = 16;
     const pointy = $pointy.getContext("2d");
@@ -17,9 +17,9 @@ bus.once("init", ({ $screen, $pointy, image }) => {
     pointy.drawImage(image, 0, 232 * 8, 8, 8, 0, 0, 16, 16);
     $pointy.style.display = "block";
     "mousemove,click,mousedown,mouseup".split(",")
-        .forEach(x => window.addEventListener(x, (e) => bus.emit(x, e, cx, cy)));
+        .forEach(x => window.addEventListener(x, (e) => emit(x, e, cx, cy)));
 
-    const move = () => {
+    const mousemove = () => {
         const { clientWidth, clientHeight, offsetLeft, offsetTop } = $screen;
         const dx = clientWidth / 640;
         const dy = clientHeight / 480;
@@ -32,8 +32,8 @@ bus.once("init", ({ $screen, $pointy, image }) => {
         $pointy.style.width = (dx * 8).toFixed(2) + "px";
         $pointy.style.height = (dy * 8).toFixed(2) + "px";
         $pointy.style.transform = `scale2d(${[1 / dx, 1 / dy].map(x => x.toFixed(3)).join(",")})`;
-        bus.emit("move@screen", 258, uvx * 2, uvy * -2);
-        bus.emit("@hover", cx, cy);
+        move(258, uvx * 2, uvy * -2);
+        emit("@hover", cx, cy);
     };
-    bus.on("move@mouse", move);
+    on("move@mouse", mousemove);
 });

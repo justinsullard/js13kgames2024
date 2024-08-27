@@ -4,8 +4,8 @@ import euclidean from "../util/euclidean.js";
 import merge from "../util/merge.js";
 import notes from "../util/notes.js";
 import uniq from "../util/uniq.js";
-import bus from "./bus.js";
-import { colorMap, transparent } from "./screen.js";
+import { on, emit } from "./bus.js";
+import { colorMap, transparent, print } from "./screen.js";
 
 const musick = notes();
 
@@ -18,8 +18,8 @@ let bpm = 250;
 let mpb = 60000 / bpm;
 let spb = mpb / 1000;
 
-bus.on("@hover", (x, y) => hovered = x === 0 && y === 0);
-bus.on("click", () => hovered && (active = !active));
+on("@hover", (x, y) => hovered = x === 0 && y === 0);
+on("click", () => hovered && (active = !active));
 
 const hire = () => {
     dj = new AudioContext();
@@ -337,9 +337,9 @@ let key = 0;
 let melody = melodies.codetastrophy;
 let scale = scales[melody.scale];
 
-bus.on("key@speaker", x => key = x % 13);
-bus.on("scale@speaker", x => scale = scales[x] ?? scale);
-bus.on("melody@speaker", x => {
+on("key@speaker", x => key = x % 13);
+on("scale@speaker", x => scale = scales[x] ?? scale);
+on("melody@speaker", x => {
     melody = melodies[x] ?? melody;
     scale = scales[melody.scale] ?? scale;
     key = melody.key ?? key;
@@ -418,8 +418,8 @@ let lasttick = -1;
 const scheduled = new Set();
 const data = new Uint8Array(79);
 
-bus.on("draw@speaker", (dur) => {
-    bus.emit("print@screen", 0, 0, hovered ? colorMap.buzz : (active ? colorMap.hardware : colorMap.comment), transparent, 1, 191);
+on("draw@speaker", (dur) => {
+    print(0, 0, hovered ? colorMap.buzz : (active ? colorMap.hardware : colorMap.comment), transparent, 1, 191);
     const tick = tickOfMeasure(dur);
     if (tick !== lasttick) {
         scheduled.delete(lasttick);
@@ -428,19 +428,19 @@ bus.on("draw@speaker", (dur) => {
     if (analyzer) {
         if (active && !scheduled.has(tick)) {
             if (tick === 0) {
-                bus.emit("start@measure");
+                emit("start@measure");
             }
             scheduled.add(tick);
             drum(tick, dur);
             bass(tick, dur);
             if (tick === 26) {
-                bus.emit("end@measure");
+                emit("end@measure");
             }
         }
         analyzer.getByteTimeDomainData(data);
         [...data].forEach((v, i) => {
             const a = (Math.abs(v - 127) / 128)**1.05 * 6 | 0;
-            bus.emit("print@screen", 1 + i, 0, colorMap.buzz, transparent, 0.25 + (a/8), 216 + a);
+            print(1 + i, 0, colorMap.buzz, transparent, 0.25 + (a/8), 216 + a);
         });
     }
 });
@@ -450,5 +450,5 @@ window.shuffle = () => {
     melody = list[(list.indexOf(melody) + 1) % list.length];
     scale = scales[melody.scale] ?? scale;
     key = melody.key ?? key;
-    bus.emit("@say", `Now playing ${melody.name}`);
+    emit("@say", `Now playing ${melody.name}`);
 };

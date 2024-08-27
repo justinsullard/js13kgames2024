@@ -1,3 +1,4 @@
+import { on, once } from "./bus.js";
 import listen from "../util/listen.js";
 // Wake Lock
 let wakelock;
@@ -21,6 +22,6 @@ const releaseWakeState = () => {
     wakelock = null;
 };
 
-bus.on("pause", releaseWakeState);
-bus.on("play", lockWakeState);
-bus.once("init", lockWakeState);
+on("pause", releaseWakeState);
+on("play", lockWakeState);
+once("init", lockWakeState);

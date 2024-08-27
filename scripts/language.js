@@ -103,9 +103,12 @@ const fpath = (x) => join(__dirname, x);
 
 
 
-const listing = await readdir(fpath("../src"));
+// const listings = await readdir(fpath("../src"));
+const listings = [];
+listings.push(fpath("../build/staging/index.rollup.js"));
+listings.push(fpath("../readme.md"));
 
-const dirs = listing.filter(x => !x.includes("."));
+const dirs = listings.filter(x => !x.includes("."));
 const sublistings = await Promise.all(
     dirs.map(async (x) => {
         const list = await readdir(fpath(`../src/${x}`));
@@ -113,13 +116,13 @@ const sublistings = await Promise.all(
     })
 );
 const subwordify = (x) => x.match(/#[a-f0-9]{6}|-?0x[a-f0-9]+|-?\d+(?:\.\d+)?|[A-Z]{2,}(?![a-z0-9])|[A-Z][a-z0-9]+|[a-z0-9]+|[A-Z]/g) ?? [];
-const wordify = (x) => (x.match(/#[a-f0-9]{6}|-?0x[a-f0-9]+|-?\d+(?:\.\d+)?|\$?\w+(?:-\w+)*|\w+(?:@\w+)+|\w+/gi) ?? [])
+const wordify = (x) => (x.match(/#[a-f0-9]{6}|-?0x[a-f0-9]+|-?\d+(?:\.\d+)?|\$?\w+(?:[-_@$]\w+)+|\w+/gi) ?? [])
     .flat();
 
 const NUM = /^(?:-?\d+(?:\.\d+)?|-?0x[a-f0-9]+)$/i;
 
 const lexicon = await ([
-    ...listing,
+    ...listings,
     ...sublistings.flat(),
 ].reduce(
     async (p, x) => {
@@ -128,7 +131,7 @@ const lexicon = await ([
 
         const words = wordify(x);
         if (x.match(/\.(js|html|css|txt|json|glsl|md)/)) {
-            const src = await readFile(fpath(`../src/${x}`), "utf-8");
+            const src = await readFile(x[0] === "/" ? x : fpath(`../src/${x}`), "utf-8");
             words.push(...wordify(src));
         }
         words.forEach(w => r.all.set(w, (r.all.get(w) ?? 0) + 1));
@@ -208,17 +211,36 @@ const lists = {
     }
 });
 console.log("Writing outputs");
+const alphaSort = ([a], [b]) => a < b ? -1 : 1;
+const freqSort = ([x, a], [y, b]) => a - b || alphaSort(x, y);
+const lengthSort = ([a], [b]) => a.length - b.length || alphaSort(a, b);
 await writeFile(
     fpath("../data/lexicon.txt"),
-    [...lexicon.all.entries()].sort(([a], [b]) => a < b ? -1 : 1).map(([a, b]) => `${a} : ${b}`).join("\n")
+    [...lexicon.all.entries()].sort(alphaSort).map(([a, b]) => `${a} : ${b}`).join("\n")
+);
+await writeFile(
+    fpath("../data/lexicon.freq.sort.txt"),
+    [...lexicon.all.entries()].sort(freqSort).map(([a, b]) => `${a} : ${b}`).join("\n")
+);
+await writeFile(
+    fpath("../data/lexicon.length.sort.txt"),
+    [...lexicon.all.entries()].sort(lengthSort).map(([a, b]) => `${a} : ${b}`).join("\n")
 );
 await writeFile(
     fpath("../data/numbers.txt"),
-    [...lexicon.numbers.entries()].sort(([a], [b]) => a < b ? -1 : 1).map(([a, b]) => `${a} : ${b}`).join("\n")
+    [...lexicon.numbers.entries()].sort(alphaSort).map(([a, b]) => `${a} : ${b}`).join("\n")
 );
 await writeFile(
     fpath("../data/subwords.txt"),
-    [...lexicon.subwords.entries()].sort(([a], [b]) => a < b ? -1 : 1).map(([a, b]) => `${a} : ${b}`).join("\n")
+    [...lexicon.subwords.entries()].sort(alphaSort).map(([a, b]) => `${a} : ${b}`).join("\n")
+);
+await writeFile(
+    fpath("../data/subwords.freq.txt"),
+    [...lexicon.subwords.entries()].sort(freqSort).map(([a, b]) => `${a} : ${b}`).join("\n")
+);
+await writeFile(
+    fpath("../data/subwords.length.txt"),
+    [...lexicon.subwords.entries()].sort(lengthSort).map(([a, b]) => `${a} : ${b}`).join("\n")
 );
 await writeFile(fpath("../data/nouns.txt"), lists.N.sort().join("\n"));
 await writeFile(fpath("../data/verb.txt"), lists.V.sort().join("\n"));

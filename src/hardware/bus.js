@@ -3,31 +3,23 @@ function store(ev) {
     if (!handlers.has(ev)) { handlers.set(ev, new Set()); }
     return handlers.get(ev);
 }
-const bus = {
-    on(ev, cb) {
-        store(ev).add(cb);
-        return bus;
-    },
-    once(ev, cb) {
-        const f = (...args) => {
-            store(ev).delete(f);
-            cb(...args);
-        };
-        store(ev).add(f);
-        return bus;
-    },
-    off(ev, cb) {
-        store(ev).delete(cb);
-        return bus;
-    },
-    emit(ev, ...args) {
-        store(ev).forEach((f) => f(...args));
-        return bus;
-    },
-    count(ev) {
-        return store(ev).size;
-    }
+export const on = (ev, cb) => store(ev).add(cb);
+export const off = (ev, cb) => store(ev).delete(cb);
+export const once = (ev, cb) => {
+    const f = (...args) => {
+        off(ev, f);
+        cb(...args);
+    };
+    on(ev, f);
 };
-export default bus;
-window.bus = bus; // TODO: Remove this
+export const emit = (ev, ...args) => store(ev).forEach((f) => f(...args));
+const count = (ev) => store(ev).size;
 
+// TODO: Remove this
+window.bus = {
+    on,
+    once,
+    off,
+    emit,
+    count,
+};

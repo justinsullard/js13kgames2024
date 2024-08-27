@@ -1,5 +1,5 @@
-import bus from "../hardware/bus.js";
-import { colorMap } from "../hardware/screen.js";
+import { on } from "../hardware/bus.js";
+import { colorMap, text, del } from "../hardware/screen.js";
 import Input from "./input.js";
 
 const autocolor = {
@@ -18,8 +18,7 @@ const cycle = () => {
         loglines.shift();
     }
 };
-
-bus.on("log@console", (x) => {
+export const log = (x) => {
     const length = x.length ?? 0;
     if (length > w) {
         if (typeof x === "string") {
@@ -42,26 +41,29 @@ bus.on("log@console", (x) => {
         loglines.push(x);
     }
     cycle();
-});
-bus.on("input@console", (...x) => {
+};
+export const input = (...x) => {
     // What the heck are we going to do how?
     loglines.push(new Input(...x));
     cycle();
-});
-
-bus.on("draw@console", (dur) => {
+};
+export const draw = (dur) => {
     if (dirty) {
         for (let c = w * h; c--;) {
-            bus.emit("del@screen", c % w, t + (c / w) | 0);
+            del(c % w, t + (c / w) | 0);
         }
         dirty = false;
     }
     loglines.forEach((l, i) => {
         if (typeof l === "string") {
             const color = autocolor[l[0]] ?? colorMap.text;
-            bus.emit("text@screen", l, 0, t + i, color);
+            text(l, 0, t + i, color);
         } else if (l.draw) {
             l.draw(dur, 0, t + i);
         }
     });
-});
+};
+
+on("log@console", log);
+on("input@console", input);
+on("draw@console", draw);

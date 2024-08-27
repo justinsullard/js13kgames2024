@@ -1,5 +1,6 @@
-import bus from "./hardware/bus.js";
+import { on, emit, once } from "./hardware/bus.js";
 import loadFont from "./font/image.js";
+import listen from "./util/listen.js";
 
 import "./hardware/cursor.js";
 import "./hardware/keyboard.js";
@@ -9,21 +10,42 @@ import "./hardware/speaker.js";
 import "./hardware/voice.js";
 // import "./hardware/wakelock.js";
 import "./grid/achievements.js";
-import "./grid/title.js";
+import "./grid/audio.js";
+import "./grid/backlog.js";
+import "./grid/billing.js";
+import "./grid/browniepoints.js";
+import "./grid/buzz.js";
+import "./grid/clipboard.js";
+import "./grid/console.js";
+import "./grid/disks.js";
+import "./grid/endscreen.js";
+import "./grid/errors.js";
+import "./grid/file.js";
+import "./grid/gutter.js";
+import "./grid/loc.js";
 import "./grid/login.js";
 import "./grid/mainmenu.js";
-import "./grid/console.js";
-import "./grid/loc.js";
+import "./grid/marketplace.js";
+import "./grid/memory.js";
+import "./grid/minimap.js";
+import "./grid/network.js";
+import "./grid/purchase.js";
+import "./grid/purchaseconfirmation.js";
+import "./grid/readme.js";
+import "./grid/repoachievements.js";
+import "./grid/repomenu.js";
+import "./grid/reporeadme.js";
+import "./grid/title.js";
+import "./grid/warnings.js";
 import "./plugins/keycontrols.js";
 import "./plugins/informant.js";
 import "./plugins/welcomemat.js";
-import listen from "./util/listen.js";
 
 document.addEventListener("visibilitychange", (...x) => {
-    bus.emit("visibility", document.hidden);
+    emit("visibility", document.hidden);
 });
-listen("blur", () => bus.emit("visibility", false));
-listen("focus", () => bus.emit("visibility", true));
+listen("blur", () => emit("visibility", false));
+listen("focus", () => emit("visibility", true));
 
 // Maybe put this in to be cheaky about the devtools
 // const devtools = function () {};
@@ -31,8 +53,8 @@ listen("focus", () => bus.emit("visibility", true));
 //   devtools.opened = true;
 //   const message = "What, are you trying to cheat or something?";
 //   setTimeout(() => {
-//       bus.emit("log@console", message);
-//       bus.emit("@say", message);
+//       emit("log@console", message);
+//       emit("@say", message);
 //   }, 1000);
 //   return message;
 // }
@@ -41,22 +63,22 @@ listen("focus", () => bus.emit("visibility", true));
 const $ = x => document.getElementById(x);
 
 let paused = false;
-bus.on("pause", () => paused = true);
-bus.on("play", () => paused = false);
+on("pause", () => paused = true);
+on("play", () => paused = false);
 
 let state = "init";
-bus.on("@state", grid => {
-    bus.emit(`close@${state}`);
+on("@state", grid => {
+    emit(`close@${state}`);
     state = grid;
-    bus.emit("clear@screen");
-    bus.emit(`open@${state}`);
+    emit("clear@screen");
+    emit(`open@${state}`);
 });
-bus.once("init", () => bus.emit("@state", "title"));
+once("init", () => emit("@state", "title"));
 
 const main = async () => {
 
     const image = await loadFont();
-    bus.emit("init", { image, $pointy: $("pointy"), $screen: $("screen") });
+    emit("init", { image, $pointy: $("pointy"), $screen: $("screen") });
 
     let now = 0;
     let frame = 0;
@@ -70,16 +92,16 @@ const main = async () => {
         now = t;
         
         // Move the mouse
-        bus.emit("move@mouse", dur);
+        emit("move@mouse", dur);
 
         if (!paused) {
-            bus.emit(`draw@${state}`, dur);
+            emit(`draw@${state}`, dur);
         }
 
-        bus.emit("draw@speaker", dur);
+        emit("draw@speaker", dur);
 
         // Draw the screen
-        bus.emit("draw@screen", dur);
+        emit("draw@screen", dur);
 
         frame++;
         requestAnimationFrame(render);

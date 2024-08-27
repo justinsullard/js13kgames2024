@@ -1,7 +1,8 @@
-import bus from "../hardware/bus.js";
+import { on, once, emit } from "../hardware/bus.js";
 import { theme, colorMap, charfade } from "../hardware/screen.js";
 import squirrel from "../util/squirrel.js";
 import stripe from "../util/stripe.js";
+import { print, printf, text } from "../hardware/screen.js";
 
 const nameRGB = colorMap.name.slice(0, 3);
 const w = 56;
@@ -11,17 +12,17 @@ let hovered = false;
 let active = false;
 let data;
 
-bus.on("open@title", () => {
+on("open@title", () => {
     active = true;
-    bus.emit("melody@speaker", "codetastrophy");
+    emit("melody@speaker", "codetastrophy");
 });
-bus.on("close@title", () => active = false);
-bus.on("@hover", (x, y) => hovered = active && x >= 33 && x <= 47 && y == 35);
-bus.on("click", () => {
+on("close@title", () => active = false);
+on("@hover", (x, y) => hovered = active && x >= 33 && x <= 47 && y == 35);
+on("click", () => {
     if (!hovered || !active){ return; }
-    bus.emit("@state", "login");
+    emit("@state", "login");
 });
-bus.on("draw@title", (dur) => {
+on("draw@title", (dur) => {
     if (!data || !active) { return; }
     const t = dur % pow;
     const d169 = t/169;
@@ -42,7 +43,7 @@ bus.on("draw@title", (dur) => {
         ) * y59**1.13 + ((Math.cos((x - 40) / (5 - d1300)) - 1) / 13);
         const fg = s > 0.6 ? colorMap.smell : (s > 0.4 ? colorMap.exception : (s >= mina ? colorMap.variable : colorMap.gutter));
         const bg = s > 0.6 ? colorMap.string : (s > 0.4 ? colorMap.variable : (s >= mina ? colorMap.keyword : colorMap.padding));
-        bus.emit("print@screen", x, y, fg, [...bg.slice(0, 3), s / 2], s, charfade[(s - mina) / (1 - mina) * 127 | 0]);
+        print(x, y, fg, [...bg.slice(0, 3), s / 2], s, charfade[(s - mina) / (1 - mina) * 127 | 0]);
     }
 
     for (let c = w * h; c--;) {
@@ -50,7 +51,7 @@ bus.on("draw@title", (dur) => {
         const alpha = color[3] / 255;
         const rgba = [color[0]/255, color[1]/255, color[2]/255, alpha];
         if (alpha) {
-            bus.emit("print@screen",
+            print(
                 (c % w) + 12,
                 ((c / w) | 0) + 23,
                 rgba,
@@ -60,11 +61,11 @@ bus.on("draw@title", (dur) => {
             );
         }
     }
-    bus.emit("printf@screen", "v0.13.dev", 40, 33, colorMap.code);
-    bus.emit("text@screen", "Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
+    printf("v0.13.dev", 40, 33, colorMap.code);
+    text("Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
 });
 
-bus.once("init", ({ image }) => {
+once("init", ({ image }) => {
     const canvas = new OffscreenCanvas(w, h);
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, w, h);

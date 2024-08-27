@@ -1,3 +1,4 @@
+import { exec } from 'node:child_process';
 import { URL } from 'node:url';
 import { join } from "path";
 import { PassThrough } from 'node:stream';
@@ -18,10 +19,25 @@ const zipmax = 13312;
 
 const roadrollerit = async (data) => {
     const inputs = [{ data, type: 'js', action: 'eval'}];
-    const packer = new Packer([{ data, type: 'js', action: 'eval'}], {});
+    const packer = new Packer(inputs, {});
     await packer.optimize();
     const { firstLine, secondLine } = packer.makeDecoder();
     return firstLine + secondLine;
+}
+
+const phrases = [];
+let speaking = false;
+const speak = () => {
+    if (speaking) { return; }
+    const msg = phrases.shift();
+    if (!msg) { return; }
+    speaking = true;
+    exec(`espeak ${JSON.stringify(msg)}`, () => { speaking = false; speak(); });
+};
+const say = (msg) => {
+    console.log(msg);
+    phrases.push(msg);
+    speak();
 }
 
 let busy = false;
@@ -32,7 +48,8 @@ export const build = async () => {
     }
     if (busy) {
         queue = true;
-        console.error("Dude, you're saving stuff too quick. I'll queue this one.");
+        const msg = "Dude, you're saving stuff too quick. I'll queue this one.";
+        say(msg);
         return false;
     }
     busy = true;
@@ -40,7 +57,7 @@ export const build = async () => {
     const version = new Date(timestamp).toISOString().split("-").pop().replace(/\D+/g, "");
     const timer = "Build Time";
     console.time(timer);
-    console.log(`building v0.13.${version}`);
+    say(`building v0.13.${version}`);
     // clear the build folder
     await fs.emptyDir("../build/");
     // create staging folder in build folder
@@ -177,9 +194,11 @@ export const build = async () => {
 	} catch (error) {
 		buildFailed = true;
 		// do some error reporting
-		console.error("Build error\x07", error);
-        setTimeout(() => console.error("You broke it!\x07"), 500);
-        setTimeout(() => console.error("Fix it, dude!\x07"), 1000);
+        say("Build error! You broke it! Fix it, dude!");
+        console.error(error);
+		// console.error("Build error\x07", error);
+        // setTimeout(() => console.error("You broke it!\x07"), 500);
+        // setTimeout(() => console.error("Fix it, dude!\x07"), 1000);
 	}
 	if (bundle) {
 		// closes the bundle
@@ -255,17 +274,18 @@ export const build = async () => {
     await fs.writeFile(fpath(`../build/codetastrophy.v0.13.${version}.zip`), buff);
     const bytes = buff.length;
     const percent = (bytes / zipmax * 100).toFixed(1);
-    console.log(`Built zip ${bytes}/${zipmax} bytes (${percent}%)`);
+    say(`Built zip ${bytes} of ${zipmax} bytes (${percent}%)`);
     console.timeEnd(timer);
     if (queue) {
         setTimeout(() => {
             busy = false;
             queue = false;
-            build();            
+            build();
         }, 10);
     } else {
-        console.log("Build ready\x07");
         busy = false;
+        // console.log("Build ready");
+        say("Build ready.");
     }
     return true;
 };
