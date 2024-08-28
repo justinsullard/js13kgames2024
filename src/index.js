@@ -6,6 +6,7 @@ import "./hardware/cursor.js";
 import "./hardware/keyboard.js";
 import "./hardware/mouse.js";
 import "./hardware/screen.js";
+import { clear, draw } from "./hardware/screen.js";
 import "./hardware/speaker.js";
 import "./hardware/voice.js";
 // import "./hardware/wakelock.js";
@@ -18,6 +19,7 @@ import "./grid/buzz.js";
 import "./grid/clipboard.js";
 import "./grid/console.js";
 import "./grid/disks.js";
+import "./grid/dumpsterfire.js";
 import "./grid/endscreen.js";
 import "./grid/errors.js";
 import "./grid/file.js";
@@ -41,9 +43,7 @@ import "./plugins/keycontrols.js";
 import "./plugins/informant.js";
 import "./plugins/welcomemat.js";
 
-document.addEventListener("visibilitychange", (...x) => {
-    emit("visibility", document.hidden);
-});
+listen("visibilitychange", () => emit("visibility", document.hidden), document);
 listen("blur", () => emit("visibility", false));
 listen("focus", () => emit("visibility", true));
 
@@ -70,7 +70,7 @@ let state = "init";
 on("@state", grid => {
     emit(`close@${state}`);
     state = grid;
-    emit("clear@screen");
+    clear();
     emit(`open@${state}`);
 });
 once("init", () => emit("@state", "title"));
@@ -101,7 +101,7 @@ const main = async () => {
         emit("draw@speaker", dur);
 
         // Draw the screen
-        emit("draw@screen", dur);
+        draw(dur);
 
         frame++;
         requestAnimationFrame(render);

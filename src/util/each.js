@@ -1,0 +1,1 @@
+export default (x, f) => x.forEach(f);

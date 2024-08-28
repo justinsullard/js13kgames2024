@@ -32,11 +32,12 @@ ONE
 Odd
 Off
 Okay
+Read
 Rich
 Right
 STATIC
+Scared
 Set
-Shadow
 Stereo
 Subsequent
 The
@@ -196,6 +197,7 @@ slacker
 some
 something
 soon
+space
 special
 specific
 split

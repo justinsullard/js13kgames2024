@@ -8,9 +8,9 @@ const lockWakeState = async () => {
     }
     try {
         wakelock = await navigator.wakeLock.request();
-        wakelock.addEventListener('release', () => {
+        listen('release', () => {
             console.log('Screen Wake State Locked:', !wakelock.released);
-        });
+        }, wakelock);
         console.log('Screen Wake State Locked:', !wakelock.released);
     } catch(e) {
         console.error('Failed to lock wake state with reason:', e.message);

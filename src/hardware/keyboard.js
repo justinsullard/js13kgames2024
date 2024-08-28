@@ -1,7 +1,4 @@
-import { emit, once } from "./bus.js";
+import { emit } from "./bus.js";
 import listen from "../util/listen.js";
-
-once(
-    "init",
-    () => "keydown,keypress,keyup".split(",").forEach(x => listen(x, e => emit(x, e)))
-);
+import each from "../util/each.js";
+each("keydown,keypress,keyup".split(","), x => listen(x, e => emit(x, e)));

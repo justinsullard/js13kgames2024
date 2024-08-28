@@ -6,6 +6,8 @@ import notes from "../util/notes.js";
 import uniq from "../util/uniq.js";
 import { on, emit } from "./bus.js";
 import { colorMap, transparent, print } from "./screen.js";
+import each from "../util/each.js";
+import listen from "../util/listen.js";
 
 const musick = notes();
 
@@ -47,7 +49,7 @@ const hire = () => {
 
 
 };
-window.addEventListener("click", hire);
+listen("click", hire);
 
 const scales = uniq(
     stripe(13,
@@ -63,7 +65,8 @@ const melodies = {
     hi: {
         name: "Hi by Rich Lions",
         scale: 26,
-        octave: 3,
+        // octave: 3,
+        octave: 4,
         key: 5,
         notes: [
             [0, 3, 4],
@@ -91,7 +94,8 @@ const melodies = {
     ohno: {
         name: "Oh no",
         scale: 39, // 21,
-        octave: 2,
+        // octave: 2,
+        octave: 3,
         key: 8,
         notes: [
             [0, 0, 1],
@@ -139,7 +143,8 @@ const melodies = {
     nevergiveup: {
         name: "Never Give Up by Rick Roller",
         scale: 17,
-        octave: 3,
+        // octave: 3,
+        octave: 4,
         key: 1,
         notes: [
             [0, 10, 1], // give
@@ -170,7 +175,8 @@ const melodies = {
     uphill: {
         name: "Uphill by K Shrub",
         scale: 7,
-        octave: 3,
+        // octave: 3,
+        octave: 4,
         key: 3,
         notes: [ // 1 7 7 7 5  1 7 7 7 4 
             [0, 6, 1],
@@ -214,9 +220,13 @@ const melodies = {
         ],
     },
     strangers: {
+        // A B C D E F G H
+        // I J K L M N O P Q
+        // R S T U V W X Y Z
         name: "Strangers by The Things",
         scale: 9,
-        octave: 3,
+        // octave: 3,
+        octave: 4,
         key: 3,
         notes: [
             [0,  0, 1],
@@ -261,7 +271,8 @@ const melodies = {
     buzzed: {
         name: "Buzzed by The Fizz",
         scale: 15,
-        octave: 2,
+        // octave: 2,
+        octave: 3,
         key: 9,
         notes: [
             [0,   0, 2], // fizzbuzz
@@ -290,7 +301,8 @@ const melodies = {
     codetastrophy: {
         name: "Code-tastrophy",
         scale: 13,
-        octave: 2,
+        // octave: 2,
+        octave: 3,
         key: 0,
         notes: sort(
             merge([12], euclidean(13, 0, 27), euclidean(5, 4, 27), euclidean(3, 13, 27))
@@ -306,7 +318,8 @@ const melodies = {
     bizznezz: {
         name: "Bizznezz",
         scale: 4,
-        octave: 2,
+        // octave: 2,
+        octave: 3,
         key: 7,
         notes: euclidean(9, 0, 27).map((x, i) => [
             [x, 10 - i, 1],
@@ -318,7 +331,8 @@ const melodies = {
     oops: {
         name: "Oops",
         scale: 35,
-        octave: 2,
+        // octave: 2,
+        octave: 3,
         key: 1,
         notes: euclidean(7, 2, 27).map((x, i) => [
             [x, i * 2 % 3, 1],
@@ -398,7 +412,7 @@ const play = (tick, dur, type = "sine", octave = 1, note = 0, len = 1, vol = 0.5
 
     osc.start(when);
     osc.stop(over);
-    setTimeout(() => [osc, gain, comp, split, verbage].forEach(x => x.disconnect()), (over - t + 1) * 1000)
+    setTimeout(() => each([osc, gain, comp, split, verbage], x => x.disconnect()), (over - t + 1) * 1000)
 };
 
 const bass = (tick, dur) => {
@@ -438,7 +452,7 @@ on("draw@speaker", (dur) => {
             }
         }
         analyzer.getByteTimeDomainData(data);
-        [...data].forEach((v, i) => {
+        each([...data], (v, i) => {
             const a = (Math.abs(v - 127) / 128)**1.05 * 6 | 0;
             print(1 + i, 0, colorMap.buzz, transparent, 0.25 + (a/8), 216 + a);
         });

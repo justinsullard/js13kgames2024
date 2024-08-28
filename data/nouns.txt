@@ -11,7 +11,6 @@ BIT
 BLEND
 BYTE
 Backlog
-Backspace
 Bar
 Billing
 Break
@@ -56,6 +55,7 @@ Frame
 Fuck
 Full
 Gene
+Gloat
 Gradient
 Hello
 Info
@@ -93,10 +93,12 @@ Parameter
 Pass
 Peek
 Peripherals
+Points
 Promise
 Prop
 Purchase
 Ramp
+Read
 References
 Rhythms
 Rich
@@ -106,7 +108,6 @@ Roller
 STATIC
 Saving
 Set
-Shadow
 Shrub
 Source
 Speech
@@ -163,10 +164,8 @@ better
 binary
 bind
 blank
-block
 blur
 boundary
-box
 brightness
 buffer
 bug
@@ -227,7 +226,6 @@ depth
 destination
 developer
 development
-dis
 discard
 docs
 document
@@ -398,7 +396,6 @@ off
 offset
 once
 one
-opacity
 open
 operations
 operator
@@ -447,7 +444,6 @@ regular
 release
 render
 rendering
-report
 request
 res
 resolve
@@ -488,6 +484,7 @@ songs
 sort
 source
 sources
+space
 speaker
 special
 specific

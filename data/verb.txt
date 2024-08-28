@@ -5,7 +5,6 @@ Arrow
 BIT
 BLEND
 Backlog
-Backspace
 Bar
 Begin
 Billing
@@ -18,7 +17,7 @@ Chug
 Cleared
 Con
 Confirm
-Continue
+Confused
 Controls
 Core
 Creating
@@ -42,6 +41,7 @@ Fragment
 Frame
 Fuck
 Full
+Gloat
 Hello
 Instanced
 Instruments
@@ -60,17 +60,19 @@ Off
 Okay
 Pass
 Peek
+Points
 Promise
 Prop
 Purchase
 Quit
 Ramp
+Read
 References
 Rick
 Right
 Saving
+Scared
 Set
-Shadow
 Source
 Stereo
 Stride
@@ -110,9 +112,7 @@ being
 better
 bind
 blank
-block
 blur
-box
 buffer
 bug
 bugs
@@ -147,6 +147,7 @@ compress
 con
 connect
 console
+continue
 contrast
 control
 could
@@ -168,7 +169,6 @@ described
 desired
 did
 dirty
-dis
 disable
 discard
 disconnect
@@ -349,7 +349,6 @@ remember
 removed
 render
 rendering
-report
 request
 resolve
 rest
@@ -385,6 +384,7 @@ smell
 sort
 source
 sources
+space
 speak
 splice
 split

@@ -1,5 +1,6 @@
 import { on } from "../hardware/bus.js";
 import { colorMap, text, del } from "../hardware/screen.js";
+import each from "../util/each.js";
 import Input from "./input.js";
 
 const autocolor = {
@@ -54,7 +55,7 @@ export const draw = (dur) => {
         }
         dirty = false;
     }
-    loglines.forEach((l, i) => {
+    each(loglines, (l, i) => {
         if (typeof l === "string") {
             const color = autocolor[l[0]] ?? colorMap.text;
             text(l, 0, t + i, color);

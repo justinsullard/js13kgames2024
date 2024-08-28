@@ -1,3 +1,4 @@
+import each from "../util/each.js";
 import { on, emit } from "./bus.js";
 
 const synth = window.speechSynthesis;
@@ -8,7 +9,7 @@ if (synth && voices) {
         voice.lang = "en-US";
         voice.pitch = 0;
         // voice.rate = 0.75;
-        [
+        each([
             "boundary",
             "end",
             "error",
@@ -16,7 +17,7 @@ if (synth && voices) {
             "pause",
             "resume",
             "start"
-        ].forEach(ev => {
+        ], ev => {
             voice[`on${ev}`] = (...x) => emit(`${ev}@say`, message);
         });
         synth.speak(voice);

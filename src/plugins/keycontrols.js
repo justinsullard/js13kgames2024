@@ -1,11 +1,12 @@
 import { on } from "../hardware/bus.js";
 import { colorMap, transparent, print, text } from "../hardware/screen.js";
+import each from "../util/each.js";
 const { buzz, hardware, pickup } = colorMap;
 
 // Key Controls
 const keys = {};
 const clearkeys = () => {
-    Object.keys(keys).forEach(k => keys[k] = false);
+    each(Object.keys(keys), k => keys[k] = false);
     // console.log("Cleared keys due to visibility", keys, Object.values(keys).find(x => x) ? Math.random() * 7 | 0 : 0);
 }
 let enabled = false;

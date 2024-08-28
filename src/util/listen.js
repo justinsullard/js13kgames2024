@@ -1,2 +1,1 @@
-export const listen = (e, f) => window.addEventListener(e, f);
-export default listen;
+export default (e, f, w = window) => w.addEventListener(e, f);

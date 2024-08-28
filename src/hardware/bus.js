@@ -1,3 +1,4 @@
+import each from "../util/each.js";
 const handlers = new Map();
 function store(ev) {
     if (!handlers.has(ev)) { handlers.set(ev, new Set()); }
@@ -12,8 +13,8 @@ export const once = (ev, cb) => {
     };
     on(ev, f);
 };
-export const emit = (ev, ...args) => store(ev).forEach((f) => f(...args));
-const count = (ev) => store(ev).size;
+export const emit = (e, ...x) => each(store(e), f => f(...x));
+const count = e => store(e).size;
 
 // TODO: Remove this
 window.bus = {

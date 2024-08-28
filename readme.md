@@ -223,6 +223,10 @@ Not a great deal of progress today, but I made some. I did a little golfing, and
 
 <img src="./devlogassets/Peek 2024-08-25 21-14.gif">
 
+### Day 14: 2024-08-27T11:00:00.000Z
+
+Some progress, but mostly just trying to do some golfing.
+
 ## References and Credits
 
 There are a large number of sources that I could name, but most directly over the last couple of months, and the development of this game, these specific sources proved valuable in my efforts to implement **Codetastrophy**.

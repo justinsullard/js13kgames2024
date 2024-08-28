@@ -29,12 +29,13 @@ const components = [
     "keyboard",
     "keycontrols",
     "informant",
+    "dumpsterfire",
     "cursor",
 ];
 on("open@mainmenu", () => {
     repo = open("repo");
     emit("melody@speaker", "codetastrophy");
-    components.forEach(c => emit(`enable@${c}`));
+    each(components, c => emit(`enable@${c}`));
     emit("log@console", "½ Main Menu");
     emit("@say", "Main Menu");
     on("keydown", keydown);
@@ -42,9 +43,19 @@ on("open@mainmenu", () => {
 on("close@mainmenu", () => {
     current = null;
     queue.splice(0, queue.length);
-    components.forEach(c => emit(`disable@${c}`));
+    each(components, c => emit(`disable@${c}`));
     off("keydown", keydown);
 });
+// keyword("function")space()name("MainMenu")oparen()token(you)cparen()space()obrack()nl()
+// pad(1)
+
+// function MainMenu(you) {
+//     if (you.areNotScared) return currentRepo.continue();\uEE
+//     if (you.areAQuiter) return new Repo();\uEE
+//     if (you.areConfused) return ReadMe();\uEE
+//     if (you.wantToGloat) return Achievements();\uEE
+// }
+
 on("draw@mainmenu", (dur) => {
     // draw options
     // Continue Current Repo : if repo
@@ -59,6 +70,7 @@ on("draw@mainmenu", (dur) => {
     emit("draw@errors", dur, 0);
     emit("draw@warnings", dur, 0);
     emit("draw@browniepoints", dur, 0);
+    emit("draw@dumpsterfire", dur);
     emit("draw@cursor", dur, 4 + cursor[0], 1 + cursor[1]);
     emit("draw@loc", dur, ...cursor);
 });

@@ -1,6 +1,6 @@
-export const loadFont = () => new Promise(resolve => {
+import listen from "../util/listen";
+export default () => new Promise(resolve => {
     const image = new Image();
     image.src = "./font/codetastrophy.tex3d.png";
-    image.addEventListener('load', () => resolve(image));
+    listen('load', () => resolve(image), image);
 });
-export default loadFont;

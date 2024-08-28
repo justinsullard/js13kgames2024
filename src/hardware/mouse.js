@@ -1,5 +1,8 @@
 import { theme, move } from "./screen.js";
 import { on, once, emit} from "./bus.js";
+import listen from "../util/listen.js";
+import each from "../util/each.js";
+import entries from "../util/entries.js";
 
 const pointer = [-16, -16];
 let cx = -1;
@@ -15,9 +18,7 @@ once("init", ({ $screen, $pointy, image }) => {
     pointy.fillRect(0, 0, 16, 16);
     pointy.globalCompositeOperation = "destination-atop";
     pointy.drawImage(image, 0, 232 * 8, 8, 8, 0, 0, 16, 16);
-    $pointy.style.display = "block";
-    "mousemove,click,mousedown,mouseup".split(",")
-        .forEach(x => window.addEventListener(x, (e) => emit(x, e, cx, cy)));
+    each("mousemove,click,mousedown,mouseup".split(","), x => listen(x, (e) => emit(x, e, cx, cy)));
 
     const mousemove = () => {
         const { clientWidth, clientHeight, offsetLeft, offsetTop } = $screen;
@@ -27,11 +28,14 @@ once("init", ({ $screen, $pointy, image }) => {
         const uvy = (pointer[1] - offsetTop) / clientHeight;
         cx = uvx * 80 | 0;
         cy = uvy * 60 | 0;
-        $pointy.style.left = pointer[0] + "px";
-        $pointy.style.top = pointer[1] + "px";
-        $pointy.style.width = (dx * 8).toFixed(2) + "px";
-        $pointy.style.height = (dy * 8).toFixed(2) + "px";
-        $pointy.style.transform = `scale2d(${[1 / dx, 1 / dy].map(x => x.toFixed(3)).join(",")})`;
+        each(entries({
+            left: pointer[0] + "px",
+            top: pointer[1] + "px",
+            width: (dx * 8).toFixed(2) + "px",
+            height: (dy * 8).toFixed(2) + "px",
+            transform: `scale2d(${[1 / dx, 1 / dy].map(x => x.toFixed(3)).join(",")})`,
+        }), ([k, v]) => $pointy.style[k] = v);
+
         move(258, uvx * 2, uvy * -2);
         emit("@hover", cx, cy);
     };

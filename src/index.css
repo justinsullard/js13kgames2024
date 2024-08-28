@@ -13,15 +13,14 @@ body, canvas {
     z-index: 1;
     max-width: clamp(640px, 1280px, 100vw);
     max-height: clamp(480px, 960px, 100vh);
+    box-shadow: #19100c  0px 0px 2px 3px;
     flex: 1;
-    align-self: center;
-    opacity: 0
+    align-self: center
 }
 #pointy {
     pointer-events: none;
     position: absolute;
     z-index: 0;
-    top: 0;
-    left: 0;
-    display: none
+    top: -16px;
+    left: -16px
 }

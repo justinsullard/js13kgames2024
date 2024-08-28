@@ -1,5 +1,7 @@
+import entries from "../util/entries.js";
 import stripe from "../util/stripe.js";
-import { on, once } from "./bus.js";
+import { once } from "./bus.js";
+import each from "../util/each.js";
 
 const loadShader = x => fetch(x).then(r => r.text());
 
@@ -98,6 +100,11 @@ export const defaultUniforms = () => ({
 const uniforms = defaultUniforms();
 
 const tp = (gl, ...x) => gl.texParameteri(...x);
+const vtp = (gl, ...x) => gl.vertexAttribPointer(...x);
+const evaa = (gl, ...x) => gl.enableVertexAttribArray(...x);
+const vad = (gl, ...x) => gl.vertexAttribDivisor(...x);
+const bb = (gl, ...x) => gl.bindBuffer(...x);
+
 let gl;
 let uniformLocations;
 let GLT2A;
@@ -108,10 +115,13 @@ let GLSD;
 
 
 export const draw = (t = 0) => {
+    if (!gl) { return; }
     uniforms.time = t;
 
-    [...Object.entries(uniforms)]
-        .forEach(([k, v]) => gl[v?.length ? "uniform2fv" : "uniform1f"](uniformLocations[k], v));
+    each(
+        entries(uniforms),
+        ([k, v]) => gl[v?.length ? "uniform2fv" : "uniform1f"](uniformLocations[k], v)
+    );
 
     gl.clearColor(...colorMap.background);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -165,9 +175,6 @@ once("init", async ({ $screen, image }) => {
     vertexShaderSrc = vertexShaderSrc || await loadShader("./hardware/vertex.glsl");
     fragmentShaderSrc = fragmentShaderSrc || await loadShader("./hardware/fragment.glsl");
 
-    $screen.style.boxShadow = `${theme.background} 0px 0px 2px 3px`;
-    $screen.style.opacity = 1;
-
     gl = $screen.getContext("webgl2", { premultipliedAlpha: false });
     GLT2A = gl.TEXTURE_2D_ARRAY;
     GLCTE = gl.CLAMP_TO_EDGE;
@@ -197,51 +204,43 @@ once("init", async ({ $screen, image }) => {
     tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
     tp(gl, GLT2A, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-    const modelBuffer = gl.createBuffer();
-    gl.bindBuffer(GLAB, modelBuffer);
+    // const modelBuffer = gl.createBuffer();
+    // bb(gl, GLAB, modelBuffer);
+    bb(gl, GLAB, gl.createBuffer());
     gl.bufferData(GLAB, modelData, GLSD);
-    gl.vertexAttribPointer(0, 2, GLF, false, 16, 0);
-    gl.vertexAttribPointer(1, 2, GLF, false, 16, 8);
-    gl.enableVertexAttribArray(0);
-    gl.enableVertexAttribArray(1);
+    vtp(gl, 0, 2, GLF, false, 16, 0);
+    vtp(gl, 1, 2, GLF, false, 16, 8);
+    evaa(gl, 0);
+    evaa(gl, 1);
 
-    const transformBuffer = gl.createBuffer();
-    gl.bindBuffer(GLAB, transformBuffer);
+    // const transformBuffer = gl.createBuffer();
+    // bb(gl, GLAB, transformBuffer);
+    bb(gl, GLAB, gl.createBuffer());
 
-    gl.vertexAttribPointer(2, 2, GLF, false, 48, 0); // offset x and y
-    gl.vertexAttribPointer(3, 4, GLF, false, 48, 8); // aFgColor
-    gl.vertexAttribPointer(4, 4, GLF, false, 48, 24); // aBgColor
-    gl.vertexAttribPointer(5, 1, GLF, false, 48, 40); // aAlpha
-    gl.vertexAttribPointer(6, 1, GLF, false, 48, 44); // aDepth (char)
+    vtp(gl, 2, 2, GLF, false, 48, 0); // offset x and y
+    vad(gl, 2, 1);
+    evaa(gl, 2);
+    vtp(gl, 3, 4, GLF, false, 48, 8); // aFgColor
+    vad(gl, 3, 1);
+    evaa(gl, 3);
+    vtp(gl, 4, 4, GLF, false, 48, 24); // aBgColor
+    vad(gl, 4, 1);
+    evaa(gl, 4);
+    vtp(gl, 5, 1, GLF, false, 48, 40); // aAlpha
+    vad(gl, 5, 1);
+    evaa(gl, 5);
+    vtp(gl, 6, 1, GLF, false, 48, 44); // aDepth (char)
+    vad(gl, 6, 1);
+    evaa(gl, 6);
 
     // Confirm if these are actually necessary.
-    gl.vertexAttribDivisor(2, 1);
-    gl.vertexAttribDivisor(3, 1);
-    gl.vertexAttribDivisor(4, 1);
-    gl.vertexAttribDivisor(5, 1);
-    gl.vertexAttribDivisor(6, 1);
 
-    gl.enableVertexAttribArray(2);
-    gl.enableVertexAttribArray(3);
-    gl.enableVertexAttribArray(4);
-    gl.enableVertexAttribArray(5);
-    gl.enableVertexAttribArray(6);
 
-    uniformLocations = Object.entries(uniforms).reduce(
+    uniformLocations = entries(uniforms).reduce(
         (r, [name, i]) => {
             r[name] = gl.getUniformLocation(program, name);
             return r;
         },
         {}
     );
-
-    on("draw@screen", draw);
-    on("print@screen", print);
-    on("move@screen", move);
-    on("update@screen", update);
-    on("del@screen", del);
-    on("printf@screen", printf);
-    on("text@screen", text);
-    on("clear@screen", clear);
-    on("report@screen", (c) => console.log("report", c, report(c)));
 });

@@ -1,13 +1,14 @@
 import { exec } from 'node:child_process';
 import { URL } from 'node:url';
-import { join } from "path";
 import { PassThrough } from 'node:stream';
+import { join } from "path";
 
 import { rollup } from "rollup";
 import fs from "fs-extra";
 import { minify } from "uglify-js";
 import { Packer } from "roadroller";
 import yazl from "yazl";
+import { minify as terser } from "terser";
 
 const __dirname = new URL('.', import.meta.url).pathname;
 
@@ -224,6 +225,18 @@ export const build = async () => {
     if (uglycode) {
         await fs.writeFile(fpath("../build/staging/index.uglify.js"), uglycode);
     }
+    let tersered;
+    try {
+        const obj = await terser(rolledup, {
+            // not sure what options we want to use aside from default
+        });
+        tersered = obj.code;
+    } catch (e) {
+        console.error("Error with terser", e);
+    }
+    if (tersered) {
+        await fs.writeFile(fpath("../build/staging/index.terser.js"), uglycode);
+    }
     // attempt roadroller
     const roadrollered = await roadrollerit(rolledup);
     await fs.writeFile(fpath("../build/staging/index.roadroller.js"), roadrollered);
@@ -233,6 +246,11 @@ export const build = async () => {
     // attempt uglify > roadroller
     const uglyroller = await roadrollerit(uglycode);
     await fs.writeFile(fpath("../build/staging/index.uglyroller.js"), uglyroller);
+    // attempt terser > roadroller
+
+    const terserroller = await roadrollerit(tersered);
+    await fs.writeFile(fpath("../build/staging/index.terserroller.js"), terserroller);
+    
     // attempt uglify > custom
     // ?
 
@@ -248,11 +266,15 @@ export const build = async () => {
             }
             if (x.startsWith("<script")) {
                 // choose the winner
-                return `<script type=module>${[
+                const winner = Object.entries({
                     uglycode,
+                    tersered,
                     roadrollered,
                     uglyroller,
-                ].sort((a, b) => a.length - b.length)[0]}</script>`
+                    terserroller,
+                }).sort((a, b) => a[1].length - b[1].length)[0];
+                say(`${winner[0]} is the smallest`);
+                return `<script type=module>${winner[1]}</script>`
             }
             return x;
         }).join("\n")

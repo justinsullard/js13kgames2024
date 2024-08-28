@@ -64,6 +64,7 @@ on("draw@title", (dur) => {
     printf("v0.13.dev", 40, 33, colorMap.code);
     text("Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
 });
+const acs = (g, ...x) => g.addColorStop(...x);
 
 once("init", ({ image }) => {
     const canvas = new OffscreenCanvas(w, h);
@@ -79,16 +80,16 @@ once("init", ({ image }) => {
     ctx.globalCompositeOperation = "source-in";
 
     fade = ctx.createLinearGradient(0, 0, 56, 0);
-    stripe(14).forEach(i => {
-        fade.addColorStop((i+0.1)/14, theme.code);
-        fade.addColorStop((i+1)/14, theme.code + "80");
+    stripe(14, i => {
+        acs(fade, (i+0.1)/14, theme.code);
+        acs(fade, (i+1)/14, theme.code + "80");
     });
     ctx.fillStyle = fade;    
     ctx.fillRect(0, 0, 56, 13);
 
     fade = ctx.createLinearGradient(0, 0, 0, 13);
-    fade.addColorStop(0.25, theme.code);
-    fade.addColorStop(1, theme.code + "20");
+    acs(fade, 0.25, theme.code);
+    acs(fade, 1, theme.code + "20");
     ctx.fillStyle = fade;    
     ctx.fillRect(0, 0, 56, 13);
 
