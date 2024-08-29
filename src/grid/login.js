@@ -1,5 +1,8 @@
 import { emit, on, once} from "../hardware/bus.js";
+import speak from "../hardware/voice.js";
+import drawKeyControls from "../plugins/keycontrols.js";
 import { open, save } from "../util/storage.js";
+import { drawConsole, inputConsole, logConsole } from "./console.js";
 
 const user = open("user") ?? {
     username: null,
@@ -46,25 +49,25 @@ const reasons = [
 
 const validate = (x = "") => reasons.find((r, i) => r[1](x) && !user.invalidations.includes(i));
 
-const queue = [];
+const loginQueue = [];
 
 let current = null;
 const step = () => {
-    const [say, show] = queue.shift() ?? [];
-    if (typeof say === "string") {
-        current = say;
-        emit("@say", say);
-        emit("log@console", show ?? say);
-    } else if (say) {
-        say();
+    const [utterance, show] = loginQueue.shift() ?? [];
+    if (typeof utterance === "string") {
+        current = utterance;
+        speak(utterance).then(step);
+        logConsole(show ?? utterance);
+    } else if (utterance) {
+        utterance();
     } else {
         current = null;
     }
 };
-on("end@say", m => m === current && step());
+// on("end@say", m => m === current && step());
 let attempts = 0;
 const passwordPrompt = () => {
-    queue.push([() => emit("input@console", "password", 32, 0, true)]);
+    loginQueue.push([() => inputConsole("password", 32, 0, true)]);
     once("@output", x => {
         let reason = validate(x);
         const i = reasons.indexOf(reason);
@@ -74,7 +77,7 @@ const passwordPrompt = () => {
             }
             update("password", "true");
             emit("melody@speaker", "hi");
-            queue.push(
+            loginQueue.push(
                 ["New password successfully set to:"],
                 ["redacted for security reasons", "*************"],
                 ["Congratulations, and welcome to the dumpster fire!"],
@@ -90,9 +93,9 @@ const passwordPrompt = () => {
             if (!reason) {
                 reason = reasons.find((r, i) => !user.invalidations.includes(i))?.slice(2);
             }
-            queue.push(
+            loginQueue.push(
                 [reason?.[0] ?? "Something went wrong."],
-                [attempts === 4 ? "Try again, or press Enter and I'll just do it for you." : "Try again."],
+                [attempts >= 2 ? "Try again, or press Enter and I'll just do it for you." : "Try again."],
                 [passwordPrompt]
             );
         }
@@ -103,42 +106,40 @@ const passwordPrompt = () => {
 
 on("open@login", () => {
     emit("melody@speaker", "hi");
-    emit("enable@keyboard");
-    emit("enable@keycontrols");
-    // emit("log@console", `½ ${stripe(7, i => String.fromCharCode(i+144)).join("")}`);
-    emit("log@console", `½ codetastrophy`);
-    queue.push(["Welcome to code-tastrophy", "Welcome to codetastrophy!"]);
+    // enableKeyControls();
+    logConsole(`½ codetastrophy`);
+    loginQueue.push(["Welcome to code-tastrophy", "Welcome to codetastrophy!"]);
     if (user.username) {
         update("tail", user.username.split("b13").pop());
-        queue.push(
+        loginQueue.push(
             ["Oh, great. You again."],
             [`I'm still not calling you ${user.desired}.`],
             [`You're forever noobie ${user.tail.split("").join(", ")}.`, `You're forever ${user.username}.`]
         );
         if (!user.password || !user.achievements.includes("samuraiocertificate")) {
             // If they don't have the achievement yet prompt them for a password again
-            queue.push(
+            loginQueue.push(
                 ["Your password has expired."],
                 ["Create a new one, then press Enter."],
                 [passwordPrompt]
             );
         } else {
-            queue.push(
+            loginQueue.push(
                 ["Welcome back to the dumpster fire!"],
                 [() => emit("@state", "mainmenu")]
             );
 
         }
     } else {
-        queue.push(
+        loginQueue.push(
             ["Input your desired username, then press Enter."],
-            [() => emit("input@console", "username", 32, 2)]
+            [() => inputConsole("username", 32, 2)]
         );
         once("@output", x => {
             const tail = Date.now().toString(16).slice(-6);
             user.desired = x;
             update("username", "n00b13" + tail);
-            queue.push(
+            loginQueue.push(
                 ["Ha ha."],
                 ["Ha ha ha."],
                 ["No."],
@@ -153,12 +154,11 @@ on("open@login", () => {
 });
 on("close@login", () => {
     current = null;
-    queue.splice(0, queue.length);
-    emit("disable@keyboard")
-    emit("disable@keycontrols")
+    loginQueue.splice(0, loginQueue.length);
+    // disableKeyControls();
 });
-
-on("draw@login", (dur) => {
-    emit("draw@console", dur);
-    emit("draw@keycontrols", dur);
-});
+export const drawLogin = (dur) => {
+    drawConsole(dur);
+    drawKeyControls(dur);
+};
+export default drawLogin;

@@ -11,6 +11,7 @@ BIT
 BLEND
 BYTE
 Backlog
+Backspace
 Bar
 Billing
 Break
@@ -24,6 +25,7 @@ Cell
 Channel
 Chug
 Clipboard
+Components
 Con
 Controls
 Core
@@ -43,6 +45,7 @@ Dynamics
 EDGE
 Element
 End
+Errors
 Escape
 Evil
 Fail
@@ -59,6 +62,7 @@ Gloat
 Gradient
 Hello
 Info
+Informant
 Instruments
 Item
 Key
@@ -124,7 +128,6 @@ Tools
 Top
 Try
 Use
-Utterance
 Vertex
 Videos
 Visit
@@ -190,7 +193,6 @@ class
 clear
 click
 client
-clock
 close
 code
 coffee
@@ -199,7 +201,6 @@ come
 comment
 comp
 completion
-components
 compress
 con
 concept
@@ -226,6 +227,7 @@ depth
 destination
 developer
 development
+dis
 discard
 docs
 document
@@ -250,12 +252,12 @@ entries
 equivalents
 errands
 error
-errors
 even
 evening
 exception
 exclusives
 exponential
+export
 fade
 fall
 feedback
@@ -309,7 +311,6 @@ implement
 imports
 impulse
 index
-informant
 initial
 input
 interaction
@@ -319,7 +320,6 @@ jam
 join
 keep
 key
-keyboard
 keys
 knee
 know
@@ -399,7 +399,6 @@ one
 open
 operations
 operator
-options
 out
 output
 over
@@ -441,6 +440,7 @@ real
 reason
 reasons
 regular
+reject
 release
 render
 rendering
@@ -484,7 +484,6 @@ songs
 sort
 source
 sources
-space
 speaker
 special
 specific
@@ -499,6 +498,7 @@ stage
 staging
 start
 state
+states
 step
 still
 stop
@@ -526,6 +526,7 @@ tick
 time
 title
 today
+toggle
 token
 tonight
 top
@@ -542,6 +543,7 @@ uphill
 use
 user
 username
+utterance
 valuable
 value
 values
@@ -549,13 +551,11 @@ variable
 verb
 version
 view
-visibility
 voice
 voices
 void
 volume
 want
-warnings
 warp
 ways
 web

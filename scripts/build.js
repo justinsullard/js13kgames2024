@@ -9,6 +9,7 @@ import { minify } from "uglify-js";
 import { Packer } from "roadroller";
 import yazl from "yazl";
 import { minify as terser } from "terser";
+import CleanCSS from "clean-css";
 
 const __dirname = new URL('.', import.meta.url).pathname;
 
@@ -90,8 +91,8 @@ export const build = async () => {
     await fs.writeFile(screenpath, screensrc
         .replace(/vertexShaderSrc = vertexShaderSrc.+/, "")
         .replace(/fragmentShaderSrc = fragmentShaderSrc.+/, "")
-        .replace(/vertexShaderSrc;/, `vertexShaderSrc = \`${vertexsrc}\`;`)
-        .replace(/fragmentShaderSrc;/, `fragmentShaderSrc = \`${fragmentsrc}\`;`)
+        .replace(/let vertexShaderSrc;/, `const vertexShaderSrc = \`${vertexsrc}\`;`)
+        .replace(/let fragmentShaderSrc;/, `const fragmentShaderSrc = \`${fragmentsrc}\`;`)
     );
 
     // extract lexicon
@@ -259,10 +260,12 @@ export const build = async () => {
     const csspath = fpath("../build/staging/index.css");
     const htmlsrc = await fs.readFile(htmlpath, "utf-8");
     const csssrc = await fs.readFile(csspath, "utf-8");
+    const cssmin = new CleanCSS({}).minify(csssrc).styles;
+    await fs.writeFile(fpath("../build/staging/index.min.css"), cssmin);
     await fs.writeFile(fpath("../build/index.html"),
         htmlsrc.split("\n").map(x => {
             if (x.startsWith("<link")) {
-                return `<style>${csssrc.replace(/\s+/mg, "")}</style>`;
+                return `<style>${cssmin}</style>`;
             }
             if (x.startsWith("<script")) {
                 // choose the winner

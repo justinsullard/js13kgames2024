@@ -19,7 +19,7 @@ const cycle = () => {
         loglines.shift();
     }
 };
-export const log = (x) => {
+export const logConsole = (x) => {
     const length = x.length ?? 0;
     if (length > w) {
         if (typeof x === "string") {
@@ -43,12 +43,12 @@ export const log = (x) => {
     }
     cycle();
 };
-export const input = (...x) => {
+export const inputConsole = (...x) => {
     // What the heck are we going to do how?
     loglines.push(new Input(...x));
     cycle();
 };
-export const draw = (dur) => {
+export const drawConsole = (dur) => {
     if (dirty) {
         for (let c = w * h; c--;) {
             del(c % w, t + (c / w) | 0);
@@ -64,7 +64,4 @@ export const draw = (dur) => {
         }
     });
 };
-
-on("log@console", log);
-on("input@console", input);
-on("draw@console", draw);
+export default drawConsole;

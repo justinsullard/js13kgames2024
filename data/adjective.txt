@@ -105,6 +105,7 @@ euclidean
 even
 expensive
 exponential
+export
 false
 few
 finally
@@ -197,7 +198,6 @@ slacker
 some
 something
 soon
-space
 special
 specific
 split
@@ -230,7 +230,6 @@ uphill
 valuable
 variable
 various
-visible
 void
 week
 welcome

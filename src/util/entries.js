@@ -1,1 +1,2 @@
-export default x => [...Object.entries(x)];
+export const entries = x => [...Object.entries(x)];
+export default entries;

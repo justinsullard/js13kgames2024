@@ -5,6 +5,7 @@ Arrow
 BIT
 BLEND
 Backlog
+Backspace
 Bar
 Begin
 Billing
@@ -14,7 +15,6 @@ Buy
 CLAMP
 Channel
 Chug
-Cleared
 Con
 Confirm
 Confused
@@ -135,7 +135,6 @@ checked
 class
 clear
 click
-clock
 close
 code
 color
@@ -169,7 +168,7 @@ described
 desired
 did
 dirty
-disable
+dis
 discard
 disconnect
 document
@@ -189,6 +188,7 @@ engineering
 even
 evening
 expired
+export
 fade
 fall
 feeling
@@ -224,7 +224,6 @@ has
 have
 having
 hear
-hidden
 hire
 home
 hope
@@ -248,7 +247,6 @@ join
 just
 keep
 key
-keyboard
 keys
 knee
 know
@@ -305,7 +303,6 @@ off
 offset
 open
 opened
-options
 out
 output
 over
@@ -344,6 +341,7 @@ reasons
 redacted
 reduce
 regarding
+reject
 release
 remember
 removed
@@ -384,7 +382,6 @@ smell
 sort
 source
 sources
-space
 speak
 splice
 split
@@ -396,6 +393,7 @@ stage
 staging
 start
 state
+states
 step
 still
 stop
@@ -416,6 +414,7 @@ thinking
 tick
 time
 title
+toggle
 token
 top
 total

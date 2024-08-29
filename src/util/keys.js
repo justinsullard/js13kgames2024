@@ -1,1 +1,2 @@
-export default x => [...Object.keys(x)];
+export const keys = x => [...Object.keys(x)];
+export default keys;

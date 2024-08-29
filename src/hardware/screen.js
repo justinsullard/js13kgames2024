@@ -202,6 +202,8 @@ once("init", async ({ $screen, image }) => {
     tp(gl, GLT2A, gl.TEXTURE_WRAP_S, GLCTE);
     tp(gl, GLT2A, gl.TEXTURE_WRAP_T, GLCTE);
     tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+    // tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    // tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     tp(gl, GLT2A, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
     // const modelBuffer = gl.createBuffer();

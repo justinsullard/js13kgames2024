@@ -1,6 +1,6 @@
 {
   "name": "codetastrophy",
-  "version": "0.13.15175200422",
+  "version": "0.13.16174950351",
   "description": "You are the cursor. Chug coffee. Throw code. Fix bugs.",
   "type": "module",
   "main": "index.js",
@@ -28,6 +28,7 @@
     "@babel/parser": "^7.25.3",
     "canvas": "^2.11.2",
     "categorized-words": "^1.0.0",
+    "clean-css": "^5.3.3",
     "fs-extra": "^11.2.0",
     "google-closure-compiler": "^20240317.0.0",
     "recursive-watch": "^1.1.4",

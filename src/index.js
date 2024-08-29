@@ -1,6 +1,5 @@
 import { on, emit, once } from "./hardware/bus.js";
 import loadFont from "./font/image.js";
-import listen from "./util/listen.js";
 
 import "./hardware/cursor.js";
 import "./hardware/keyboard.js";
@@ -42,10 +41,11 @@ import "./grid/warnings.js";
 import "./plugins/keycontrols.js";
 import "./plugins/informant.js";
 import "./plugins/welcomemat.js";
-
-listen("visibilitychange", () => emit("visibility", document.hidden), document);
-listen("blur", () => emit("visibility", false));
-listen("focus", () => emit("visibility", true));
+import drawSpeaker from "./hardware/speaker.js";
+import drawTitle from "./grid/title.js";
+import drawMainMenu from "./grid/mainmenu.js";
+import drawLogin from "./grid/login.js";
+import { clearKeys } from "./plugins/keycontrols.js";
 
 // Maybe put this in to be cheaky about the devtools
 // const devtools = function () {};
@@ -53,7 +53,7 @@ listen("focus", () => emit("visibility", true));
 //   devtools.opened = true;
 //   const message = "What, are you trying to cheat or something?";
 //   setTimeout(() => {
-//       emit("log@console", message);
+//       logConsole(message);
 //       emit("@say", message);
 //   }, 1000);
 //   return message;
@@ -67,23 +67,29 @@ on("pause", () => paused = true);
 on("play", () => paused = false);
 
 let state = "init";
+const states = {
+    init: () => {},
+    title: drawTitle,
+    mainmenu: drawMainMenu,
+    login: drawLogin,
+};
 on("@state", grid => {
     emit(`close@${state}`);
     state = grid;
     clear();
+    clearKeys();
     emit(`open@${state}`);
 });
 once("init", () => emit("@state", "title"));
 
 const main = async () => {
-
     const image = await loadFont();
     emit("init", { image, $pointy: $("pointy"), $screen: $("screen") });
 
     let now = 0;
     let frame = 0;
     let dur = 0;
-
+    const r = () => requestAnimationFrame(render);
     const render = (t = 0) => {
         const d = t - now;
         if (!paused) {
@@ -95,18 +101,19 @@ const main = async () => {
         emit("move@mouse", dur);
 
         if (!paused) {
-            emit(`draw@${state}`, dur);
+            states[state](dur);
+            // emit(`draw@${state}`, dur);
         }
 
-        emit("draw@speaker", dur);
+        drawSpeaker(dur);
 
         // Draw the screen
         draw(dur);
 
         frame++;
-        requestAnimationFrame(render);
+        r();
     };
-    requestAnimationFrame(render);
+    r();
 };
 
 main().catch(console.error);

@@ -432,7 +432,7 @@ let lasttick = -1;
 const scheduled = new Set();
 const data = new Uint8Array(79);
 
-on("draw@speaker", (dur) => {
+export const drawSpeaker = (dur) => {
     print(0, 0, hovered ? colorMap.buzz : (active ? colorMap.hardware : colorMap.comment), transparent, 1, 191);
     const tick = tickOfMeasure(dur);
     if (tick !== lasttick) {
@@ -457,7 +457,8 @@ on("draw@speaker", (dur) => {
             print(1 + i, 0, colorMap.buzz, transparent, 0.25 + (a/8), 216 + a);
         });
     }
-});
+};
+export default drawSpeaker;
 // TODO: Remove this
 window.shuffle = () => {
     const list = [...Object.values(melodies)];

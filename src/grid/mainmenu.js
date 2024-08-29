@@ -1,6 +1,17 @@
 import { on, off, emit} from "../hardware/bus.js";
 import { open } from "../util/storage.js";
 import each from "../util/each.js";
+import drawDumpsterFire from "./dumpsterfire.js";
+import { logConsole, drawConsole } from "./console.js";
+import drawKeyControls from "../plugins/keycontrols.js";
+import drawInformant from "../plugins/informant.js";
+import drawBuzz from "./buzz.js";
+import drawErrors from "./errors.js";
+import drawBrowniePoints from "./browniepoints.js";
+import drawWarnings from "./warnings.js";
+import { cursortrauma, drawCursor } from "../hardware/cursor.js";
+import drawLoc from "./loc.js";
+import speak from "../hardware/voice.js";
 let repo = null;
 let user = null;
 on("update@user", x => user = x);
@@ -16,62 +27,39 @@ const keydown = ({ key }) => {
     const dir = move[key.split("Arrow").pop()];
     if (dir) {
         dir();
-        emit("trauma@cursor", 2 + Math.random() * 2.5);
+        cursortrauma(2 + Math.random() * 2.5);
     }
 };
-const components = [
-    "buzz",
-    "errors",
-    "warnings",
-    "browniepoints",
-    "clock",
-    "loc",
-    "console",
-    "keyboard",
-    "keycontrols",
-    "informant",
-    "dumpsterfire",
-    "cursor",
-];
 on("open@mainmenu", () => {
     repo = open("repo");
     emit("melody@speaker", "codetastrophy");
-    each(components, c => emit(`enable@${c}`));
-    emit("log@console", "½ Main Menu");
-    emit("@say", "Main Menu");
+    logConsole("½ Main Menu");
+    speak("Main Menu");
     on("keydown", keydown);
 });
 on("close@mainmenu", () => {
     current = null;
     queue.splice(0, queue.length);
-    each(components, c => emit(`disable@${c}`));
     off("keydown", keydown);
 });
-// keyword("function")space()name("MainMenu")oparen()token(you)cparen()space()obrack()nl()
-// pad(1)
 
 // function MainMenu(you) {
-//     if (you.areNotScared) return currentRepo.continue();\uEE
-//     if (you.areAQuiter) return new Repo();\uEE
-//     if (you.areConfused) return ReadMe();\uEE
-//     if (you.wantToGloat) return Achievements();\uEE
+//     if (you.areNotScared) return currentRepo.continue();î
+//     if (you.areAQuiter) return new Repo();î
+//     if (you.areConfused) return ReadMe();î
+//     if (you.wantToGloat) return Achievements();î
 // }
 
-on("draw@mainmenu", (dur) => {
-    // draw options
-    // Continue Current Repo : if repo
-    // Quit Current Repo : if repo
-    // New Repo : if !repo
-    // Readme
-    // Achievements
-    emit("draw@console", dur);
-    emit("draw@keycontrols", dur);
-    emit("draw@informant", dur);
-    emit("draw@buzz", dur, 13);
-    emit("draw@errors", dur, 0);
-    emit("draw@warnings", dur, 0);
-    emit("draw@browniepoints", dur, 0);
-    emit("draw@dumpsterfire", dur);
-    emit("draw@cursor", dur, 4 + cursor[0], 1 + cursor[1]);
-    emit("draw@loc", dur, ...cursor);
-});
+export const drawMainMenu = (dur) => {
+    drawConsole(dur);
+    drawKeyControls(dur);
+    drawInformant(dur);
+    drawBuzz(dur, 13);
+    drawErrors(dur, 0);
+    drawWarnings(dur, 0);
+    drawBrowniePoints(dur, 0);
+    drawDumpsterFire(dur);
+    drawCursor(dur, 4 + cursor[0], 1 + cursor[1]);
+    drawLoc(dur, ...cursor);
+};
+export default drawMainMenu;

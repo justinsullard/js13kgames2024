@@ -22,7 +22,7 @@ on("click", () => {
     if (!hovered || !active){ return; }
     emit("@state", "login");
 });
-on("draw@title", (dur) => {
+export const drawTitle = (dur) => {
     if (!data || !active) { return; }
     const t = dur % pow;
     const d169 = t/169;
@@ -63,22 +63,21 @@ on("draw@title", (dur) => {
     }
     printf("v0.13.dev", 40, 33, colorMap.code);
     text("Click to Begin", 33, 35, hovered ? colorMap.buzz : colorMap.hardware);
-});
-const acs = (g, ...x) => g.addColorStop(...x);
+};
+export default drawTitle;
 
+const acs = (g, ...x) => g.addColorStop(...x);
 once("init", ({ image }) => {
     const canvas = new OffscreenCanvas(w, h);
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, w, h);
-    for (let l = 0; l < 7; l++) {
-        ctx.drawImage(image,
-            0, (144 + l) * 8, 8, 8,
-            l * 8, 2, 8, 8);
-    }
+    // "\x90\x91\x92\x93\x94\x95\x96"
+    // stripe(y,i=>i+144)
+    stripe(7, l => ctx.drawImage(image,
+        0, (144 + l) * 8, 8, 8,
+        l * 8, 2, 8, 8))
     let fade;
-    
     ctx.globalCompositeOperation = "source-in";
-
     fade = ctx.createLinearGradient(0, 0, 56, 0);
     stripe(14, i => {
         acs(fade, (i+0.1)/14, theme.code);
@@ -86,16 +85,11 @@ once("init", ({ image }) => {
     });
     ctx.fillStyle = fade;    
     ctx.fillRect(0, 0, 56, 13);
-
     fade = ctx.createLinearGradient(0, 0, 0, 13);
     acs(fade, 0.25, theme.code);
     acs(fade, 1, theme.code + "20");
     ctx.fillStyle = fade;    
     ctx.fillRect(0, 0, 56, 13);
-
-
     ctx.globalCompositeOperation = "source-over";
-
     data = ctx.getImageData(0, 0, 56, 13).data;
-
 });

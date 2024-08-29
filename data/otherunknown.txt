@@ -37,7 +37,6 @@ D
 Dev
 Do
 E
-EE
 Esc
 F
 FX
@@ -70,6 +69,7 @@ K3
 L
 L2
 LEQUAL
+Loc
 M
 MIN
 MIPMAP
@@ -139,7 +139,6 @@ be
 bg
 bizznezz
 bpm
-browniepoints
 by
 c
 c2af552e8df0
@@ -149,7 +148,6 @@ codetastrophy
 col
 com
 const
-cparen
 ctx
 cx
 cy
@@ -172,7 +170,6 @@ dir
 dist
 dj
 do
-drawcursor
 dur
 dx
 dy
@@ -226,7 +223,6 @@ js13kgames2024
 jsisweird
 justinsullard
 k
-keycontrols
 keydown
 keyify
 keyup
@@ -235,7 +231,6 @@ lang
 len
 ll
 ln
-loc
 loglines
 lramp
 lucasdamianjohnson
@@ -259,17 +254,16 @@ n00b13
 na
 nev
 nevergiveup
-nl
 no
 noisehack
 noobie
 nt
-obrack
 oct
 of
 ohno
 on
-oparen
+onend
+onerror
 or
 org
 osc
@@ -335,7 +329,6 @@ vec4
 verbage
 vert
 visibilitychange
-visibilty
 vl
 vol
 vs

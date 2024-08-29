@@ -1,1 +1,2 @@
-export default (x, f) => x.forEach(f);
+export const each = (x, f) => x.forEach(f);
+export default each;
