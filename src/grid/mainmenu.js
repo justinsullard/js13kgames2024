@@ -12,22 +12,23 @@ import drawWarnings from "./warnings.js";
 import { cursortrauma, drawCursor } from "../hardware/cursor.js";
 import drawLoc from "./loc.js";
 import speak from "../hardware/voice.js";
+import { max, min, random } from "../util/math.js";
 let repo = null;
 let user = null;
 on("update@user", x => user = x);
 // Main Menu
 let cursor = [0, 0];
 const move = {
-    Left: () => cursor[0] = Math.max(0, cursor[0] - 1),
-    Right: () => cursor[0] = Math.min(36, cursor[0] + 1),
-    Up: () => cursor[1] = Math.max(0, cursor[1] - 1),
-    Down: () => cursor[1] = Math.min(36, cursor[1] + 1),
+    Left: () => cursor[0] = max(0, cursor[0] - 1),
+    Right: () => cursor[0] = min(36, cursor[0] + 1),
+    Up: () => cursor[1] = max(0, cursor[1] - 1),
+    Down: () => cursor[1] = min(36, cursor[1] + 1),
 };
 const keydown = ({ key }) => {
     const dir = move[key.split("Arrow").pop()];
     if (dir) {
         dir();
-        cursortrauma(2 + Math.random() * 2.5);
+        cursortrauma(2 + random() * 2.5);
     }
 };
 on("open@mainmenu", () => {

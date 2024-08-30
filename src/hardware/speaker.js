@@ -8,6 +8,7 @@ import { on, emit } from "./bus.js";
 import { colorMap, transparent, print } from "./screen.js";
 import each from "../util/each.js";
 import listen from "../util/listen.js";
+import { pow, max, min, abs, random } from "../util/math.js";
 
 const musick = notes();
 
@@ -38,8 +39,8 @@ const hire = () => {
     const impulseR = impulse.getChannelData(1);
     for (let i = 0; i < length; i++) {
         let n = i;
-        impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
-        impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
+        impulseL[i] = (random() * 2 - 1) * pow(1 - n / length, decay);
+        impulseR[i] = (random() * 2 - 1) * pow(1 - n / length, decay);
     }
     reverb.buffer = impulse;
     reverb.connect(analyzer);
@@ -374,7 +375,7 @@ const play = (tick, dur, type = "sine", octave = 1, note = 0, len = 1, vol = 0.5
     // console.log({ tick, note, octave, oct, n: (note + 7) % 7, sick: key + (oct * 13) + scale[(note + 7) % 7], freq });
 
     const t = dj.currentTime;
-    const offset = Math.max(((27 + tick) - ((dur / mpb) % 27)) % 27 * spb, 0);
+    const offset = max(((27 + tick) - ((dur / mpb) % 27)) % 27 * spb, 0);
     const when = t + offset;
 
     const osc = dj.createOscillator({ type });
@@ -397,7 +398,7 @@ const play = (tick, dur, type = "sine", octave = 1, note = 0, len = 1, vol = 0.5
     sval(comp.knee, 39, when);
     sval(comp.ratio, 13, when);
     sval(comp.attack, 0, when);
-    sval(comp.release, Math.min(decay, 1), when);
+    sval(comp.release, min(decay, 1), when);
 
 
     lramp(verbage.gain, vol * verb, when + 0.1);
@@ -453,7 +454,7 @@ export const drawSpeaker = (dur) => {
         }
         analyzer.getByteTimeDomainData(data);
         each([...data], (v, i) => {
-            const a = (Math.abs(v - 127) / 128)**1.05 * 6 | 0;
+            const a = (abs(v - 127) / 128)**1.05 * 6 | 0;
             print(1 + i, 0, colorMap.buzz, transparent, 0.25 + (a/8), 216 + a);
         });
     }

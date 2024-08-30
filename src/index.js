@@ -116,4 +116,4 @@ const main = async () => {
     r();
 };
 
-main().catch(console.error);
+main()

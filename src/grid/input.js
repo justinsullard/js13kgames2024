@@ -2,6 +2,7 @@ import { emit, on, off } from "../hardware/bus.js";
 import { cursortrauma, drawCursor } from "../hardware/cursor.js";
 import { colorMap, printf, text, del } from "../hardware/screen.js";
 import each from "../util/each.js";
+import { max, min } from "../util/math.js";
 
 export class Input {
     label = "input";
@@ -52,7 +53,7 @@ export class Input {
     }
     get vl() { return this.value.length; }
     norm() {
-        this.cursor = Math.max(0, Math.min(this.vl, this.max, this.cursor));
+        this.cursor = max(0, min(this.vl, this.max, this.cursor));
     }
     submit() {
         if (!this.complete && this.vl >= this.min) {

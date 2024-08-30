@@ -12,8 +12,6 @@ body, canvas {
 #screen {
     z-index: 1;
     aspect-ratio: 4/3;
-    /* max-width: clamp(640px, 1280px, 100vw);
-    max-height: clamp(480px, 960px, 100vh); */
     box-shadow: #19100c  0px 0px 2px 3px;
     max-width: min(100vw, 100vh * 4 / 3);
     max-height: min(100vh, 100vw / 4 * 3);
@@ -24,6 +22,5 @@ body, canvas {
     pointer-events: none;
     position: absolute;
     z-index: 0;
-    top: -16px;
-    left: -16px
+    top: -16px
 }

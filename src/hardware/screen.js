@@ -1,7 +1,8 @@
 import entries from "../util/entries.js";
 import stripe from "../util/stripe.js";
-import { once } from "./bus.js";
+import { on, once } from "./bus.js";
 import each from "../util/each.js";
+import { abs, sin } from "../util/math.js";
 
 const loadShader = x => fetch(x).then(r => r.text());
 
@@ -90,7 +91,7 @@ const transformData = new Float32Array([
 
 export const defaultUniforms = () => ({
     time: 0,
-    warp: new Float32Array([1 / 51, 1 / 46]),
+    warp: new Float32Array([0, 0]), // new Float32Array([1 / 51, 1 / 46]),
     mask: new Float32Array([0.25, 0.9]),
     fxmix: 0.2,
     brightness: 0.02,
@@ -98,6 +99,8 @@ export const defaultUniforms = () => ({
     saturation: 0,
 });
 const uniforms = defaultUniforms();
+on("uniforms@screen", () => console.log(uniforms));
+on("uniform@screen", (k, v) => uniforms[k] = v);
 
 const tp = (gl, ...x) => gl.texParameteri(...x);
 const vtp = (gl, ...x) => gl.vertexAttribPointer(...x);
@@ -107,16 +110,38 @@ const bb = (gl, ...x) => gl.bindBuffer(...x);
 
 let gl;
 let uniformLocations;
-let GLT2A;
-let GLCTE;
-let GLAB;
-let GLF;
-let GLSD;
+const TEXTURE_2D_ARRAY = 35866;
+const CLAMP_TO_EDGE = 33071;
+const ARRAY_BUFFER = 34962;
+const FLOAT = 5126;
+const STATIC_DRAW = 35044;
+const VERTEX_SHADER = 35633;
+const FRAGMENT_SHADER = 35632;
+const TEXTURE_WRAP_S = 10242;
+const TEXTURE_WRAP_T = 10243;
+const TEXTURE_MIN_FILTER = 10241;
+const NEAREST_MIPMAP_LINEAR = 9986;
+const LINEAR_MIPMAP_LINEAR = 9987;
+const TEXTURE_MAG_FILTER = 10240;
+const NEAREST = 9728;
+const COLOR_BUFFER_BIT = 16384;
+const DEPTH_TEST = 2929;
+const LEQUAL = 515;
+const BLEND = 3042;
+const SRC_ALPHA = 770;
+const ONE_MINUS_SRC_ALPHA = 771;
+const TRIANGLES = 4;
+const RGBA = 6408;
+const UNSIGNED_BYTE = 5121;
 
 
 export const draw = (t = 0) => {
     if (!gl) { return; }
     uniforms.time = t;
+    const c = t/13000;
+    const st = abs(sin(c));
+    uniforms.warp.set([st / 51, st / 46]);
+    uniforms.fxmix = 0.05 + st / 5;
 
     each(
         entries(uniforms),
@@ -124,16 +149,16 @@ export const draw = (t = 0) => {
     );
 
     gl.clearColor(...colorMap.background);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(COLOR_BUFFER_BIT);
 
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(DEPTH_TEST);
+    gl.depthFunc(LEQUAL);
+    gl.enable(BLEND);
+    gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
 
-    gl.bufferData(GLAB, transformData, GLSD);
+    gl.bufferData(ARRAY_BUFFER, transformData, STATIC_DRAW);
 
-    gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, 5059); // 4800 + 256 + 3
+    gl.drawArraysInstanced(TRIANGLES, 0, 6, 5059); // 4800 + 256 + 3
 };
 export const print = (x = 0, y = 0, fg = colorMap.text, bg = transparent, alpha = 1, char = 0) => {
     const offset = (x + y * 80) * transformStride;
@@ -176,67 +201,45 @@ once("init", async ({ $screen, image }) => {
     fragmentShaderSrc = fragmentShaderSrc || await loadShader("./hardware/fragment.glsl");
 
     gl = $screen.getContext("webgl2", { premultipliedAlpha: false });
-    GLT2A = gl.TEXTURE_2D_ARRAY;
-    GLCTE = gl.CLAMP_TO_EDGE;
-    GLAB = gl.ARRAY_BUFFER;
-    GLF = gl.FLOAT;
-    GLSD = gl.STATIC_DRAW;
-    
     const program = gl.createProgram();
-    // const vertexShader = makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
-    // const fragmentShader = makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
-    makeShader(gl, gl.VERTEX_SHADER, program, vertexShaderSrc);
-    makeShader(gl, gl.FRAGMENT_SHADER, program, fragmentShaderSrc);
+    makeShader(gl, VERTEX_SHADER, program, vertexShaderSrc);
+    makeShader(gl, FRAGMENT_SHADER, program, fragmentShaderSrc);
     gl.linkProgram(program);
-    // if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    // if (!gl.getProgramParameter(program, LINK_STATUS)) {
     //     console.debug(gl.getShaderInfoLog(vertexShader));
     //     console.debug(gl.getShaderInfoLog(fragmentShader));
     // }
     gl.useProgram(program);
 
-
     const texture = gl.createTexture();
-    gl.bindTexture(GLT2A, texture);
-    gl.texImage3D(GLT2A, 0, gl.RGBA, 8, 8, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.generateMipmap(GLT2A);
-    tp(gl, GLT2A, gl.TEXTURE_WRAP_S, GLCTE);
-    tp(gl, GLT2A, gl.TEXTURE_WRAP_T, GLCTE);
-    tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-    // tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-    // tp(gl, GLT2A, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    tp(gl, GLT2A, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.bindTexture(TEXTURE_2D_ARRAY, texture);
+    gl.texImage3D(TEXTURE_2D_ARRAY, 0, RGBA, 8, 8, 256, 0, RGBA, UNSIGNED_BYTE, image);
+    gl.generateMipmap(TEXTURE_2D_ARRAY);
+    tp(gl, TEXTURE_2D_ARRAY, TEXTURE_WRAP_S, CLAMP_TO_EDGE);
+    tp(gl, TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, CLAMP_TO_EDGE);
+    tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, NEAREST_MIPMAP_LINEAR); // LINEAR_MIPMAP_LINEAR is an option, but might require changes to the font
+    // tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, LINEAR_MIPMAP_LINEAR); // LINEAR_MIPMAP_LINEAR is an option, but might require changes to the font
+    tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MAG_FILTER, NEAREST);
 
-    // const modelBuffer = gl.createBuffer();
-    // bb(gl, GLAB, modelBuffer);
-    bb(gl, GLAB, gl.createBuffer());
-    gl.bufferData(GLAB, modelData, GLSD);
-    vtp(gl, 0, 2, GLF, false, 16, 0);
-    vtp(gl, 1, 2, GLF, false, 16, 8);
+    bb(gl, ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(ARRAY_BUFFER, modelData, STATIC_DRAW);
+    vtp(gl, 0, 2, FLOAT, false, 16, 0);
+    vtp(gl, 1, 2, FLOAT, false, 16, 8);
     evaa(gl, 0);
     evaa(gl, 1);
 
-    // const transformBuffer = gl.createBuffer();
-    // bb(gl, GLAB, transformBuffer);
-    bb(gl, GLAB, gl.createBuffer());
-
-    vtp(gl, 2, 2, GLF, false, 48, 0); // offset x and y
-    vad(gl, 2, 1);
-    evaa(gl, 2);
-    vtp(gl, 3, 4, GLF, false, 48, 8); // aFgColor
-    vad(gl, 3, 1);
-    evaa(gl, 3);
-    vtp(gl, 4, 4, GLF, false, 48, 24); // aBgColor
-    vad(gl, 4, 1);
-    evaa(gl, 4);
-    vtp(gl, 5, 1, GLF, false, 48, 40); // aAlpha
-    vad(gl, 5, 1);
-    evaa(gl, 5);
-    vtp(gl, 6, 1, GLF, false, 48, 44); // aDepth (char)
-    vad(gl, 6, 1);
-    evaa(gl, 6);
-
-    // Confirm if these are actually necessary.
-
+    bb(gl, ARRAY_BUFFER, gl.createBuffer());
+    each([
+        [2, 2, FLOAT, false, 48, 0], // offset x and y
+        [3, 4, FLOAT, false, 48, 8], // aFgColor
+        [4, 4, FLOAT, false, 48, 24], // aBgColor
+        [5, 1, FLOAT, false, 48, 40], // aAlpha
+        [6, 1, FLOAT, false, 48, 44], // aDepth (char)
+    ], (x, i) => {
+        vtp(gl, ...x);
+        vad(gl, x[0], 1);
+        evaa(gl, x[0]);    
+    });
 
     uniformLocations = entries(uniforms).reduce(
         (r, [name, i]) => {

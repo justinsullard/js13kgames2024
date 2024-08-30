@@ -3,6 +3,7 @@ import { colorMap, transparent, print, text } from "../hardware/screen.js";
 import each from "../util/each.js";
 import listen from "../util/listen.js";
 import keys from "../util/keys.js";
+import { random } from "../util/math.js";
 const { buzz, hardware, pickup } = colorMap;
 
 // Key Controls
@@ -28,7 +29,7 @@ const t = 40;
 const l = 50;
 export const drawKeyControls = (dur) => {
     // if (!enabled) { return; }
-    const energy = Object.values(KEYS).find(x => x) ? Math.random() * 7 | 0 : 0;
+    const energy = Object.values(KEYS).find(x => x) ? random() * 7 | 0 : 0;
     print(l, t, KEYS.Escape ? buzz : hardware, transparent, 1, 0x1b); // Esc
     print(l + 1, t + 1, KEYS[" "] ? buzz : hardware, transparent, 1, 0xe5); // Spacebar
     print(l + 2, t, KEYS.Shift ? buzz : hardware, transparent, 1, 0xe6); // Shift
