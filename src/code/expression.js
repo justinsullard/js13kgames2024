@@ -1,1 +1,4 @@
-export default class Expression {}
+export default class Expression {
+    leadingComments = []; // Comment
+    trailingComments = []; // Comment
+}

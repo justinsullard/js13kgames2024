@@ -1,1 +1,4 @@
-export default class Declaration {};
+export default class Declaration {
+    leadingComments = []; // Comment
+    trailingComments = []; // Comment
+};

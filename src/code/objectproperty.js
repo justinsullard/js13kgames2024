@@ -1,7 +1,4 @@
-export default class ObjectProperty {
-    key = null; // Identifier, MemberExpression, StringLiteral, TemplateLiteral
-    computed = false; // boolean
-    method = false; // boolean
+import Property from "./property.js";
+export default class ObjectProperty extends Property {
     shorthand = false; // boolean
-    value = null; // Expression, Pattern, Literal, Identifier
 }

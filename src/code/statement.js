@@ -1,1 +1,4 @@
-export default class Statement {}
+export default class Statement {
+    leadingComments = []; // Comment
+    trailingComments = []; // Comment
+}
