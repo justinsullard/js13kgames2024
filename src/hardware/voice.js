@@ -2,9 +2,8 @@ import each from "../util/each.js";
 import { on, emit } from "./bus.js";
 
 const synth = window.speechSynthesis;
-let voices = synth?.getVoices();
 export const speak = (message = "Hello world!") => new Promise((resolve, reject) => {
-    if (synth && voices) {
+    if (synth) {
         const voice = new SpeechSynthesisUtterance(message);
         voice.lang = "en-US";
         // voice.pitch = 0;

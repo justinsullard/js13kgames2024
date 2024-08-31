@@ -4,6 +4,7 @@ import squirrel from "../util/squirrel.js";
 import stripe from "../util/stripe.js";
 import { print, printf, text } from "../hardware/screen.js";
 import { sin, cos } from "../util/math.js";
+import map from "../util/map.js";
 
 const nameRGB = colorMap.name.slice(0, 3);
 const w = 56;
@@ -50,13 +51,14 @@ export const drawTitle = (dur) => {
     for (let c = w * h; c--;) {
         const color = data.slice(c * 4, c * 4 + 4);
         const alpha = color[3] / 255;
-        const rgba = [color[0]/255, color[1]/255, color[2]/255, alpha];
+        const rgba = map([...color], x => x / 255);
         if (alpha) {
             print(
                 (c % w) + 12,
                 ((c / w) | 0) + 23,
                 rgba,
-                [...nameRGB, alpha**2],
+                // [...nameRGB, alpha**2],
+                [...nameRGB, alpha / 3],
                 1,
                 charfade[(color[3] - 3 + sin(d169 + (c/13)**1.3) * 3) / 2 | 0],
             );

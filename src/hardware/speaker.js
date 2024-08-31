@@ -17,7 +17,7 @@ let analyzer;
 let reverb;
 let hovered = false;
 let active = false;
-let bpm = 250;
+let bpm = 13000 / 54; // 240.740...
 let mpb = 60000 / bpm;
 let spb = mpb / 1000;
 

@@ -6,6 +6,7 @@ const {
     min,
     random,
     pow,
+    PI,
 } = Math;
 export {
     sin,
@@ -15,4 +16,5 @@ export {
     min,
     random,
     pow,
+    PI,
 };

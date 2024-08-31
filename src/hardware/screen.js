@@ -2,7 +2,8 @@ import entries from "../util/entries.js";
 import stripe from "../util/stripe.js";
 import { on, once } from "./bus.js";
 import each from "../util/each.js";
-import { abs, sin } from "../util/math.js";
+import { abs, sin, cos, PI } from "../util/math.js";
+import assign from "../util/assign.js";
 
 const loadShader = x => fetch(x).then(r => r.text());
 
@@ -107,6 +108,7 @@ const vtp = (gl, ...x) => gl.vertexAttribPointer(...x);
 const evaa = (gl, ...x) => gl.enableVertexAttribArray(...x);
 const vad = (gl, ...x) => gl.vertexAttribDivisor(...x);
 const bb = (gl, ...x) => gl.bindBuffer(...x);
+const bd = (gl, ...x) => gl.bufferData(...x);
 
 let gl;
 let uniformLocations;
@@ -123,6 +125,7 @@ const TEXTURE_MIN_FILTER = 10241;
 const NEAREST_MIPMAP_LINEAR = 9986;
 const LINEAR_MIPMAP_LINEAR = 9987;
 const TEXTURE_MAG_FILTER = 10240;
+const LINEAR = 9729;
 const NEAREST = 9728;
 const COLOR_BUFFER_BIT = 16384;
 const DEPTH_TEST = 2929;
@@ -134,15 +137,21 @@ const TRIANGLES = 4;
 const RGBA = 6408;
 const UNSIGNED_BYTE = 5121;
 
-
 export const draw = (t = 0) => {
     if (!gl) { return; }
     uniforms.time = t;
-    const c = t/13000;
+    // const c = t / 6480;
+    // const c = t / 12960 * PI; // Makes it "breath" with the music. One measure "in", one measure "out"
+    const c = t / 13000 * PI;
     const st = abs(sin(c));
-    uniforms.warp.set([st / 51, st / 46]);
-    uniforms.fxmix = 0.05 + st / 5;
-
+    const ct = cos(c);
+    // uniforms.warp.set([st / 51, st / 46]);
+    assign(uniforms, {
+        fxmix: 0.1 + st / 5,
+        saturation: ct / 5,
+        contrast: ct / 5,
+        brightness: 0.02 + ct / 8,
+    });
     each(
         entries(uniforms),
         ([k, v]) => gl[v?.length ? "uniform2fv" : "uniform1f"](uniformLocations[k], v)
@@ -156,7 +165,7 @@ export const draw = (t = 0) => {
     gl.enable(BLEND);
     gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
 
-    gl.bufferData(ARRAY_BUFFER, transformData, STATIC_DRAW);
+    bd(gl, ARRAY_BUFFER, transformData, STATIC_DRAW);
 
     gl.drawArraysInstanced(TRIANGLES, 0, 6, 5059); // 4800 + 256 + 3
 };
@@ -210,19 +219,21 @@ once("init", async ({ $screen, image }) => {
     //     console.debug(gl.getShaderInfoLog(fragmentShader));
     // }
     gl.useProgram(program);
-
+    // console.log("gl.LINEAR", gl.LINEAR);
+    
     const texture = gl.createTexture();
     gl.bindTexture(TEXTURE_2D_ARRAY, texture);
     gl.texImage3D(TEXTURE_2D_ARRAY, 0, RGBA, 8, 8, 256, 0, RGBA, UNSIGNED_BYTE, image);
     gl.generateMipmap(TEXTURE_2D_ARRAY);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_WRAP_S, CLAMP_TO_EDGE);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, CLAMP_TO_EDGE);
-    tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, NEAREST_MIPMAP_LINEAR); // LINEAR_MIPMAP_LINEAR is an option, but might require changes to the font
-    // tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, LINEAR_MIPMAP_LINEAR); // LINEAR_MIPMAP_LINEAR is an option, but might require changes to the font
+    // tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, NEAREST_MIPMAP_LINEAR); // LINEAR_MIPMAP_LINEAR is an option, but might require changes to the font
+    // tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, LINEAR_MIPMAP_LINEAR);
+    tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, NEAREST);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MAG_FILTER, NEAREST);
 
     bb(gl, ARRAY_BUFFER, gl.createBuffer());
-    gl.bufferData(ARRAY_BUFFER, modelData, STATIC_DRAW);
+    bd(gl, ARRAY_BUFFER, modelData, STATIC_DRAW);
     vtp(gl, 0, 2, FLOAT, false, 16, 0);
     vtp(gl, 1, 2, FLOAT, false, 16, 8);
     evaa(gl, 0);

@@ -68,6 +68,7 @@ export const build = async () => {
         filter: (x) => !x.includes("font/") || x.includes("image.js")
     });
     await fs.copy(fpath("../src/font/codetastrophy.tex3d.png"), fpath("../build/13.png"));
+    await fs.copy(fpath("../src/font/codetastrophy.tex3d.webp"), fpath("../build/13.webp"));
     
     // Adjust version number
     const titlepath = fpath("../build/staging/grid/title.js");
@@ -79,20 +80,22 @@ export const build = async () => {
     const newpackage = packagesrc.replace(/"0\.13\.\d+"/, `"0.13.${version}"`);
     await fs.writeFile(packagepath, newpackage, "utf-8");
 
-    // Adjust png path
+    // Adjust font path
     const imagejspath = fpath("../build/staging/font/image.js");
     const imagejssrc = await fs.readFile(imagejspath, "utf-8");
-    await fs.writeFile(imagejspath, imagejssrc.replace("./font/codetastrophy.tex3d.png", "./13.png"));
+    const imageext = imagejssrc.match(/codetastrophy\.tex3d\.\w+/)[0].split(".").pop();
+    await fs.writeFile(imagejspath, imagejssrc.replace("./font/codetastrophy.tex3d.", "./13."));
     // inline glsl for shaders
     const screenpath = fpath("../build/staging/hardware/screen.js");
     const screensrc = await fs.readFile(screenpath, "utf-8");
     const vertexsrc = await fs.readFile(fpath("../build/staging/hardware/vertex.glsl"), "utf-8");
     const fragmentsrc = await fs.readFile(fpath("../build/staging/hardware/fragment.glsl"), "utf-8");
+    const shadermin = (src) => src.replace(/^ +/g, "");
     await fs.writeFile(screenpath, screensrc
         .replace(/vertexShaderSrc = vertexShaderSrc.+/, "")
         .replace(/fragmentShaderSrc = fragmentShaderSrc.+/, "")
-        .replace(/let vertexShaderSrc;/, `const vertexShaderSrc = \`${vertexsrc}\`;`)
-        .replace(/let fragmentShaderSrc;/, `const fragmentShaderSrc = \`${fragmentsrc}\`;`)
+        .replace(/let vertexShaderSrc;/, `const vertexShaderSrc = \`${shadermin(vertexsrc)}\`;`)
+        .replace(/let fragmentShaderSrc;/, `const fragmentShaderSrc = \`${shadermin(fragmentsrc)}\`;`)
     );
 
     // extract lexicon
@@ -288,7 +291,7 @@ export const build = async () => {
     const zip = new yazl.ZipFile();
     zip.outputStream.pipe(stream);
     zip.addFile(fpath("../build/index.html"), "index.html");
-    zip.addFile(fpath("../build/13.png"), "13.png");
+    zip.addFile(fpath(`../build/13.${imageext}`), `13.${imageext}`);
     zip.end({ forceZip64Format: false }, () => console.log("yazl zip ended"));
     const buff = await new Promise((resolve, reject) => {
         const chunks = [];
