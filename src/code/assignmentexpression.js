@@ -1,5 +1,5 @@
-import Expression from "./expression";
-export const AssignmentExpressionOperator = Object.freeze([
+import Expression from "./expression.js";
+export const AssignmentExpressionOperator = [
     "=",
     "+=",
     "-=",
@@ -8,7 +8,7 @@ export const AssignmentExpressionOperator = Object.freeze([
     "|=",
     "^=",
     "&=",
-]);
+];
 export default class AssignmentExpression extends Expression {
     left = null; // Pattern, Identifier, MemberExpression, !AssignmentPattern
     operator = "="; // AssignmentExpressionOperator

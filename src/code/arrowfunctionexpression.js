@@ -1,4 +1,4 @@
-import Expression from "./expression";
+import Expression from "./expression.js";
 export default class ArrowFunctionExpression extends Expression {
     // id = null;
     generator = false; // boolean
