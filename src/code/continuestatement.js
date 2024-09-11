@@ -1,4 +1,6 @@
 import Statement from "./statement.js";
-export default class ContinueStatement extends Statement {
-    label = null; // null, Identifier
-}
+import Invocation from "../bs/invocation.js";
+export const ContinueStatement = Invocation("ContinueStatement", [Statement], [
+    ["label", null], // null, Identifier
+]);
+export default ContinueStatement;

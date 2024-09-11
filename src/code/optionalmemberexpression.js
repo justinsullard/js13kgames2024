@@ -1,4 +1,6 @@
 import MemberExpression from "./memberexpression.js";
-export default class OptionalMemberExpression extends MemberExpression {
-    optional = true; // boolean
-}
+import Invocation from "../bs/invocation.js";
+export const OptionalMemberExpression = Invocation("OptionalMemberExpression", [MemberExpression], [
+    ["optional", true], // boolean
+]);
+export default OptionalMemberExpression;

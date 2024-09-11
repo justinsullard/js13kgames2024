@@ -1,7 +1,8 @@
-import { exec } from 'node:child_process';
-import { URL } from 'node:url';
-import { PassThrough } from 'node:stream';
+import { exec } from "node:child_process";
+import { URL } from "node:url";
+import { PassThrough } from "node:stream";
 import { join } from "path";
+import { parse } from "@babel/parser";
 
 import { rollup } from "rollup";
 import fs from "fs-extra";
@@ -10,6 +11,7 @@ import { Packer } from "roadroller";
 import yazl from "yazl";
 import { minify as terser } from "terser";
 import CleanCSS from "clean-css";
+import { stat } from "node:fs/promises";
 
 const __dirname = new URL('.', import.meta.url).pathname;
 
@@ -19,13 +21,55 @@ const jamstart = 1723546800000;
 const jamend = 1726225200000;
 const zipmax = 13312;
 
+const second = 1000;
+const minute = second * 60;
+const hour = minute * 60;
+const day = hour * 24;
+const remainingTime = () => {
+    let millis = jamend - Date.now();
+    return Object.entries({ day, hour, minute, second })
+        .map(([k, quant]) => {
+            const val = millis / quant | 0;
+            millis -= val * quant;
+            return val ? `${val} ${k}s` : "";
+        }).filter(x => x).join(" ").replace(/, (\d+ \w+)$/, " and $1");
+};
+
 const roadrollerit = async (data) => {
     const inputs = [{ data, type: 'js', action: 'eval'}];
-    const packer = new Packer(inputs, {});
+    const packer = new Packer(inputs, {
+        optimize: 2,
+        // allowFreeVars: true,
+    });
     await packer.optimize();
     const { firstLine, secondLine } = packer.makeDecoder();
     return firstLine + secondLine;
 }
+const BABEL_CONFIG = {};
+
+const simplify = (obj = {}) => {
+    if (typeof obj !== "object" || !obj) { return obj; }
+    if (Array.isArray(obj)) { return obj.map(simplify); }
+    const {
+        directives,
+        loc,
+        start,
+        end,
+        range,
+        extra,
+        ...kept
+    } = obj;
+    Object.entries(kept)
+        .filter(([k, v]) => v !== undefined)
+        .forEach(([k, v]) => {
+            if (typeof v === "object") {
+                kept[k] = simplify(v);
+            }
+        });
+    return kept;
+};
+
+const mapCode = (raw) => simplify(parse(raw, BABEL_CONFIG));
 
 const phrases = [];
 let speaking = false;
@@ -36,6 +80,12 @@ const speak = () => {
     speaking = true;
     exec(`espeak ${JSON.stringify(msg)}`, () => { speaking = false; speak(); });
 };
+const advzip = (zippath) => new Promise((resolve) => {
+    exec(`advzip --recompress -4 --iter 1300 ${zippath}`, async () => {
+        const stats = await stat(zippath);
+        resolve(stats.size);
+    })
+});
 const say = (msg) => {
     console.log(msg);
     phrases.push(msg);
@@ -108,102 +158,16 @@ export const build = async () => {
 	try {
 		// create a bundle
 		bundle = await rollup({
-            // input options
-            // // core input options
-            // external,
-            input: fpath("../build/staging/index.js"), // conditionally required
-            // plugins,
-
-            // // advanced input options
-            // cache,
-            // logLevel,
-            // makeAbsoluteExternalsRelative,
-            // maxParallelFileOps,
-            // onLog,
-            // onwarn,
-            // preserveEntrySignatures,
-            // strictDeprecations,
-
-            // // danger zone
-            // context,
-            // moduleContext,
-            // preserveSymlinks,
-            // shimMissingExports,
+            input: fpath("../build/staging/index.js"),
             treeshake: true,
-
-            // // experimental
-            // experimentalCacheExpiry,
-            // experimentalLogSideEffects,
-            // perf
         });
-        const { output } = await bundle.generate({
-            // output options
-            // // core output options
-            // dir,
-            // file,
-            // format,
-            // globals,
-            // name,
-            // plugins,
-
-            // // advanced output options
-            // assetFileNames,
-            // banner,
-            // chunkFileNames,
-            // compact,
-            // dynamicImportInCjs,
-            // entryFileNames,
-            // extend,
-            // externalImportAttributes,
-            // footer,
-            // generatedCode,
-            // hashCharacters,
-            // hoistTransitiveImports,
-            // importAttributesKey,
-            // inlineDynamicImports,
-            // interop,
-            // intro,
-            // manualChunks,
-            // minifyInternalExports,
-            // outro,
-            // paths,
-            // preserveModules,
-            // preserveModulesRoot,
-            // sourcemap,
-            // sourcemapBaseUrl,
-            // sourcemapExcludeSources,
-            // sourcemapFile,
-            // sourcemapFileNames,
-            // sourcemapIgnoreList,
-            // sourcemapPathTransform,
-            // validate,
-
-            // // danger zone
-            // amd,
-            // esModule,
-            // exports,
-            // externalLiveBindings,
-            // freeze,
-            // indent,
-            // noConflict,
-            // reexportProtoFromExternal,
-            // sanitizeFileName,
-            // strict,
-            // systemNullSetters,
-
-            // // experimental
-            // experimentalMinChunkSize
-        });
+        const { output } = await bundle.generate({});
         rolledup = output.map(x => x.code).join("\n");
 		await fs.writeFile(fpath("../build/staging/index.rollup.js"), rolledup);
 	} catch (error) {
 		buildFailed = true;
-		// do some error reporting
         say("Build error! You broke it! Fix it, dude!");
         console.error(error);
-		// console.error("Build error\x07", error);
-        // setTimeout(() => console.error("You broke it!\x07"), 500);
-        // setTimeout(() => console.error("Fix it, dude!\x07"), 1000);
 	}
 	if (bundle) {
 		// closes the bundle
@@ -229,6 +193,7 @@ export const build = async () => {
     if (uglycode) {
         await fs.writeFile(fpath("../build/staging/index.uglify.js"), uglycode);
     }
+    // attempt terser
     let tersered;
     try {
         const obj = await terser(rolledup, {
@@ -246,6 +211,8 @@ export const build = async () => {
     await fs.writeFile(fpath("../build/staging/index.roadroller.js"), roadrollered);
 
     // attempt custom
+    const mapped = mapCode(rolledup);
+    await fs.writeFile(fpath("../build/staging/index.mapped.json"), JSON.stringify(mapped, false, 2));
     // attempt custom > roadroller
     // attempt uglify > roadroller
     const uglyroller = await roadrollerit(uglycode);
@@ -274,7 +241,7 @@ export const build = async () => {
                 // choose the winner
                 const winner = Object.entries({
                     uglycode,
-                    tersered,
+                    // tersered,
                     roadrollered,
                     uglyroller,
                     terserroller,
@@ -299,8 +266,10 @@ export const build = async () => {
         stream.on("error", reject);
         stream.on("end", () => resolve(Buffer.concat(chunks)));
     });
-    await fs.writeFile(fpath(`../build/codetastrophy.v0.13.${version}.zip`), buff);
-    const bytes = buff.length;
+    const zippath = fpath(`../build/codetastrophy.v0.13.${version}.zip`);
+    await fs.writeFile(zippath, buff);
+    const bytes = await advzip(zippath);
+    console.log(`advzip saved ${buff.length - bytes} bytes (was ${buff.length} bytes from yazl)`);
     const percent = (bytes / zipmax * 100).toFixed(1);
     say(`Built zip ${bytes} of ${zipmax} bytes (${percent}%)`);
     console.timeEnd(timer);
@@ -313,7 +282,7 @@ export const build = async () => {
     } else {
         busy = false;
         // console.log("Build ready");
-        say("Build ready.");
+        say(`Build ready. ${remainingTime()} remain in the jam`);
     }
     return true;
 };

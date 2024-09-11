@@ -1,6 +1,8 @@
 import Expression from "./expression.js";
-export default class MemberExpression extends Expression {
-    object = null; // Expression, Identifier, Literal
-    computed = false; // boolean
-    property = null; // Expression, Identifer, Literal
-}
+import Invocation from "../bs/invocation.js";
+export const MemberExpression = Invocation("MemberExpression", [Expression], [
+    ["object", null], // Expression, Identifier, Literal
+    ["computed", false], // boolean
+    ["property", null], // Expression, Identifer, Literal
+]);
+export default MemberExpression;

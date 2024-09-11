@@ -1,4 +1,6 @@
 import Expression from "./expression.js";
-export default class SequenceExpression extends Expression {
-    expressions = []; // Identifiere, Expression
-}
+import Invocation from "../bs/invocation.js";
+export const SequenceExpression = Invocation("SequenceExpression", [Expression], [
+    ["expressions", []], // Identifier, Expression
+]);
+export default SequenceExpression;

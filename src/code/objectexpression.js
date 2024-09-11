@@ -1,4 +1,6 @@
 import Expression from "./expression.js";
-export default class ObjectExpression extends Expression {
-    properties = []; // ObjectMethod, ObjectProperty, SpreadElement
-}
+import Invocation from "../bs/invocation.js";
+export const ObjectExpression = Invocation("ObjectExpression", [Expression], [
+    ["properties", []], // ObjectMethod, ObjectProperty, SpreadElement
+]);
+export default ObjectExpression;

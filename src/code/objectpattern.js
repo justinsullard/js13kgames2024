@@ -1,4 +1,6 @@
 import Pattern from "./pattern.js";
-export default class ObjectPattern extends Pattern {
-    properties = []; // ObjectProperty, RestElement
-}
+import Invocation from "../bs/invocation.js";
+export const ObjectPattern = Invocation("ObjectPattern", [Pattern], [
+    ["properties", []], // ObjectProperty, RestElement
+]);
+export default ObjectPattern;

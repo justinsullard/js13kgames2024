@@ -1,2 +1,4 @@
 import Statement from "./statement.js";
-export default class EmptyStatement extends Statement {};
+import Invocation from "../bs/invocation.js";
+export const EmptyStatement = Invocation("EmptyStatement", [Statement]);
+export default EmptyStatement;

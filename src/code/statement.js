@@ -1,4 +1,6 @@
-export default class Statement {
-    leadingComments = []; // Comment
-    trailingComments = []; // Comment
-}
+import Invocation from "../bs/invocation.js";
+export const Statement = Invocation("Statement", [], [
+    ["leadingComments", []], // Comment
+    ["trailingComments", []], // Comment
+]);
+export default Statement;

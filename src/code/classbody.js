@@ -1,4 +1,5 @@
-export default class ClassBody {
-    body = []; // ClassMethod, ClassProperty
-    innerComments = []; // Comment
-}
+import Invocation from "../bs/invocation.js";
+export const ClassBody = Invocation("ClassBody", [], [
+    ["body", []], // ClassMethod, ClassProperty, Comment
+]);
+export default ClassBody;

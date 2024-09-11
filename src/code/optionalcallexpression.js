@@ -1,4 +1,6 @@
 import CallExpression from "./callexpression.js";
-export default class OptionalCallExpression extends CallExpression {
-    optional = true; // boolean
-}
+import Invocation from "../bs/invocation.js";
+export const OptionalCallExpression = Invocation("OptionalCallExpression", [CallExpression], [
+    ["optional", true], // boolean
+]);
+export default OptionalCallExpression;

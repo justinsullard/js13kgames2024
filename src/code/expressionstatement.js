@@ -1,5 +1,6 @@
 import Statement from "./statement.js";
-
-export default class ExpressionStatement extends Statement {
-    expression = null; // Expression
-}
+import Invocation from "../bs/invocation.js";
+export const ExpressionStatement = Invocation("ExpressionStatement", [Statement], [
+    ["expression", null], // Expression
+]);
+export default ExpressionStatement;

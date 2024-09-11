@@ -1,7 +1,9 @@
 import Statement from "./statement.js";
-export default class ForStatement extends Statement {
-    init = null; // AssignmentExpression, VariableDeclaration
-    test = null; // BinaryExpression, UpdateExpression
-    update = null; // UpdateExpression, null
-    body = null; // BlockStatement
-}
+import Invocation from "../bs/invocation.js";
+export const ForStatement = Invocation("ForStatement", [Statement], [
+    ["init", null], // AssignmentExpression, VariableDeclaration
+    ["test", null], // BinaryExpression, UpdateExpression
+    ["update", null], // UpdateExpression, null
+    ["body", null], // BlockStatement
+]);
+export default ForStatement;

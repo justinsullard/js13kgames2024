@@ -1,5 +1,4 @@
 import Method from "./method.js";
-export default class ObjectMethod extends Method {
-    // id = null; // null ?
-    // kind !== "constructor"
-}
+import Invocation from "../bs/invocation.js";
+export const ObjectMethod = Invocation("ObjectMethod", [Method]);
+export default ObjectMethod;

@@ -1,5 +1,9 @@
 import { on, emit, once } from "./hardware/bus.js";
 import loadFont from "./font/image.js";
+import Thing from "./bs/thing.js";
+import Prop from "./bs/prop.js";
+import Action from "./bs/action.js";
+import Mutation from "./bs/mutation.js";
 
 import "./hardware/cursor.js";
 import "./hardware/keyboard.js";
@@ -46,6 +50,13 @@ import drawTitle from "./grid/title.js";
 import drawMainMenu from "./grid/mainmenu.js";
 import drawLogin from "./grid/login.js";
 import { clearKeys } from "./plugins/keycontrols.js";
+import each from "./util/each.js";
+import Link from "./bs/link.js";
+import AST from "./code/ast.js";
+import assign from "./util/assign.js";
+assign(window, { AST });
+
+each([Thing, Prop, Action, Mutation, Link], x => console.log({ class: x, code: x.toString(), instance: new x() }));
 
 // Maybe put this in to be cheaky about the devtools
 // const devtools = function () {};
@@ -81,6 +92,7 @@ on("@state", grid => {
     emit(`open@${state}`);
 });
 once("init", () => emit("@state", "title"));
+
 
 const main = async () => {
     const image = await loadFont();

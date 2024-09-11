@@ -1,5 +1,7 @@
 import Statement from "./statement.js";
-export default class LabeledStatement extends Statement {
-    body = null; // Statement
-    label = null; // Identifier
-}
+import Invocation from "../bs/invocation.js";
+export const LabeledStatement = Invocation("LabeledStatement", [Statement], [
+    ["body", null], // Statement
+    ["label", null], // Identifier
+]);
+export default LabeledStatement;

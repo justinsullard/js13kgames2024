@@ -1,2 +1,4 @@
 import Statement from "./statement.js";
-export default class DebuggerStatement extends Statement {}
+import Invocation from "../bs/invocation.js";
+export const DebuggerStatement = Invocation("DebuggerStatement", [Statement]);
+export default DebuggerStatement;

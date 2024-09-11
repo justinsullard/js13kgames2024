@@ -1,4 +1,7 @@
 import Expression from "./expression.js";
-export default class AwaitExpression extends Expression {
-    argument = null; // CallExpression
-}
+import Evil from "../bs/evil.js";
+import Invocation from "../bs/invocation.js";
+export const AwaitExpression = Invocation("AwaitExpression", [Expression], [
+    ["argument", null], // CallExpression
+]);
+export default AwaitExpression;

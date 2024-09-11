@@ -4,6 +4,10 @@ import { on, once } from "./bus.js";
 import each from "../util/each.js";
 import { abs, sin, cos, PI } from "../util/math.js";
 import assign from "../util/assign.js";
+import keys from "../util/keys.js";
+import values from "../util/values.js";
+import reduce from "../util/reduce.js";
+// import split from "../util/split.js";
 
 const loadShader = x => fetch(x).then(r => r.text());
 
@@ -40,12 +44,12 @@ export const theme = {
     background: "#19100c",
 };
 export const transparent = [0, 0, 0, 0];
-export const colorMap = [...Object.entries(theme)].reduce((r, [k, v]) => {
+export const colorMap = reduce(entries(theme), (r, [k, v]) => {
     r[k] = [...v.match(/\w\w/g).map(x => parseInt(x, 16) / 255), 1];
     return r;
 }, {});
-export const colors = [...Object.values(colorMap)];
-export const colorNames = [...Object.keys(colorMap)];
+export const colors = values(colorMap);
+export const colorNames = keys(colorMap);
 export const colorCount = colors.length;
 export const charfade = [46,44,30,96,39,58,45,13,59,11,31,19,10,94,8,17,18,28,29,5,14,20,4,15,37,7,33,127,6,106,105,42,12,43,61,124,40,92,0,21,24,32,47,60,41,62,95,116,1,16,26,3,108,123,63,9,2,125,34,23,25,91,126,93,118,27,84,114,89,38,86,115,22,111,102,104,120,49,97,55,76,99,112,113,121,64,101,107,103,119,110,117,36,122,74,70,80,109,67,98,75,88,100,52,65,69,51,54,57,83,87,35,50,78,85,56,48,73,79,71,68,72,82,90,81,53,66,77];
 
@@ -122,10 +126,7 @@ const FRAGMENT_SHADER = 35632;
 const TEXTURE_WRAP_S = 10242;
 const TEXTURE_WRAP_T = 10243;
 const TEXTURE_MIN_FILTER = 10241;
-const NEAREST_MIPMAP_LINEAR = 9986;
-const LINEAR_MIPMAP_LINEAR = 9987;
 const TEXTURE_MAG_FILTER = 10240;
-const LINEAR = 9729;
 const NEAREST = 9728;
 const COLOR_BUFFER_BIT = 16384;
 const DEPTH_TEST = 2929;
@@ -140,8 +141,6 @@ const UNSIGNED_BYTE = 5121;
 export const draw = (t = 0) => {
     if (!gl) { return; }
     uniforms.time = t;
-    // const c = t / 6480;
-    // const c = t / 12960 * PI; // Makes it "breath" with the music. One measure "in", one measure "out"
     const c = t / 13000 * PI;
     const st = abs(sin(c));
     const ct = cos(c);
@@ -214,12 +213,7 @@ once("init", async ({ $screen, image }) => {
     makeShader(gl, VERTEX_SHADER, program, vertexShaderSrc);
     makeShader(gl, FRAGMENT_SHADER, program, fragmentShaderSrc);
     gl.linkProgram(program);
-    // if (!gl.getProgramParameter(program, LINK_STATUS)) {
-    //     console.debug(gl.getShaderInfoLog(vertexShader));
-    //     console.debug(gl.getShaderInfoLog(fragmentShader));
-    // }
     gl.useProgram(program);
-    // console.log("gl.LINEAR", gl.LINEAR);
     
     const texture = gl.createTexture();
     gl.bindTexture(TEXTURE_2D_ARRAY, texture);
@@ -227,8 +221,6 @@ once("init", async ({ $screen, image }) => {
     gl.generateMipmap(TEXTURE_2D_ARRAY);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_WRAP_S, CLAMP_TO_EDGE);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, CLAMP_TO_EDGE);
-    // tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, NEAREST_MIPMAP_LINEAR); // LINEAR_MIPMAP_LINEAR is an option, but might require changes to the font
-    // tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, LINEAR_MIPMAP_LINEAR);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, NEAREST);
     tp(gl, TEXTURE_2D_ARRAY, TEXTURE_MAG_FILTER, NEAREST);
 

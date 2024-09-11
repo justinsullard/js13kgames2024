@@ -44,13 +44,15 @@ on("close@mainmenu", () => {
     off("keydown", keydown);
 });
 
-// function MainMenu(you) {
-//     if (you.areNotScared) return currentRepo.continue();î
-//     if (you.areAQuiter) return new Repo();î
-//     if (you.areConfused) return ReadMe();î
-//     if (you.wantToGloat) return Achievements();î
-// }
-
+// const MainMenu = () => FunctionDeclaration();
+/**
+function MainMenu(you) {
+    if (you.areNotScared) return currentRepo.continue(î);
+    if (you.areAQuiter) return new Repo(î);
+    if (you.areConfused) return ReadMe(î);
+    if (you.wantToGloat) return Achievements(î);
+}
+*/
 export const drawMainMenu = (dur) => {
     drawConsole(dur);
     drawKeyControls(dur);

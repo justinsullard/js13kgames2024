@@ -1,2 +1,4 @@
 import Comment from "./comment.js";
-export default class CommentLine extends Comment {}
+import Invocation from "../bs/invocation.js";
+export const CommentLine = Invocation("CommentLine", [Comment]);
+export default CommentLine;

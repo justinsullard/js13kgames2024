@@ -1,8 +1,10 @@
 import Expression from "./expression.js";
-export default class FunctionExpression extends Expression {
-    id = null; // Identifier
-    generator = false; // boolean
-    async = false; // boolean
-    params = []; // Identifier, Pattern
-    body = null; // BlockStatement
-}
+import Invocation from "../bs/invocation.js";
+export const FunctionExpression = Invocation("FunctionExpression", [Expression], [
+    ["generator", false], // boolean
+    ["async", false], // boolean
+    ["id", null], // Identifier
+    ["params", []], // Identifier, Pattern
+    ["body", null], // BlockStatement
+]);
+export default FunctionExpression;

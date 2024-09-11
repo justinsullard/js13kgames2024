@@ -1,5 +1,7 @@
 import Literal from "./literal.js";
-export default class TemplateLiteral extends Literal {
-    expression = []; // Expression, Identifier
-    quasis = []; // TemplateElement
-}
+import Invocation from "../bs/invocation.js";
+export const TemplateLiteral = Invocation("TemplateLiteral", [Literal], [
+    ["expression", []], // Expression, Identifier
+    ["quasis", []], // TemplateElement
+]);
+export default TemplateLiteral;

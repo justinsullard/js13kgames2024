@@ -1,4 +1,4 @@
 import Literal from "./literal.js";
-export default class NullLiteral extends Literal {
-
-}
+import Invocation from "../bs/invocation.js";
+export const NullLiteral = Invocation("NullLiteral", [Literal]);
+export default NullLiteral;

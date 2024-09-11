@@ -1,4 +1,6 @@
 import Declaration from "./declaration.js";
-export default class ExportDefaultDeclaration extends Declaration {
-    declaration = null; // Identifier, ClassDeclaration
-}
+import Invocation from "../bs/invocation.js";
+export const ExportDefaultDeclaration = Invocation("ExportDefaultDeclaration", [Declaration], [
+    ["declaration", null], // Identifier, ClassDeclaration
+]);
+export default ExportDefaultDeclaration;

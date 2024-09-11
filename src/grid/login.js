@@ -26,7 +26,7 @@ on("achievement@user", (x) => update("achievements", x));
 once("init", update);
 
 const reasons = [
-    ["Triskaidekaphobia!", x => (x.length === 13 || x.toLowerCase() === "thirteen" || x.includes("13")), "What, do you have triskaidekaphobia"],
+    ["Triskaidekaphobia!", x => (x.length === 13 || x.toLowerCase() === "thirteen" || x.includes("13")), "What, do you have triskaidekaphobia?"],
     ["Too few lowercase letters.", x => !x.match(/[a-z]/), "Too many lowercase letters."],
     ["Too few capital letters.", x => !x.match(/[A-Z]/), "Too many capital letters."],
     ["Too few letters.", x => !x.match(/[a-z]/i), "Too many letters."],

@@ -1,11 +1,12 @@
 import Method from "./method.js";
-export const ClassMethodKind = Object.freeze([
+import Invocation from "../bs/invocation.js";
+export const ClassMethodKind = [
     "constructor",
     "get",
     "method",
     "set"
+];
+export const ClassMethod = Invocation("ClassMethod", [Method], [
+    ["static", false], // boolean
 ]);
-export default class ClassMethod extends Method {
-    // id = null;
-    static = false; // boolean
-}
+export default ClassMethod;

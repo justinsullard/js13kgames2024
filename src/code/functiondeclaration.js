@@ -1,8 +1,10 @@
 import Declaration from "./declaration.js";
-export default class FunctionDeclaration extends Declaration {
-    id = null; // Identifier
-    generator = false; // boolean
-    async = false; // boolean
-    params = []; // Identifier, Pattern
-    body = null; // BlockStatement
-}
+import Invocation from "../bs/invocation.js";
+export const FunctionDeclaration = Invocation("FunctionDeclaration", [Declaration], [
+    ["id", null], // Identifier
+    ["generator", false], // boolean
+    ["async", false], // boolean
+    ["params", []], // Identifier, Pattern
+    ["body", null], // BlockStatement
+]);
+export default FunctionDeclaration;

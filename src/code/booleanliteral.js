@@ -1,4 +1,7 @@
 import Literal from "./literal.js";
-export default class BooleanLiteral extends Literal {
-    value = false; // boolean
-}
+import Evil from "../bs/evil.js";
+import Invocation from "../bs/invocation.js";
+export const BooleanLiteral = Invocation("BooleanLiteral", [Literal], [
+    ["value", false], // boolean
+]);
+export default BooleanLiteral;

@@ -1,2 +1,4 @@
 import WhileStatement from "./whilestatement.js";
-export default class DoWhileStatement extends WhileStatement {}
+import Invocation from "../bs/invocation.js";
+export const DoWhileStatement = Invocation("DoWhileStatement", [WhileStatement]);
+export default DoWhileStatement;

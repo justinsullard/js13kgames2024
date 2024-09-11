@@ -1,2 +1,4 @@
 import Expression from "./expression.js";
-export default class ThisExpression extends Expression {}
+import Invocation from "../bs/invocation.js";
+export const ThisExpression = Invocation("ThisExpression", [Expression]);
+export default ThisExpression;

@@ -14,13 +14,13 @@ export const once = (ev, cb) => {
     on(ev, f);
 };
 export const emit = (e, ...x) => each(store(e), f => f(...x));
-const count = e => store(e).size;
+// const count = e => store(e).size;
 
 // TODO: Remove this
-window.bus = {
-    on,
-    once,
-    off,
-    emit,
-    count,
-};
+// window.bus = {
+//     on,
+//     once,
+//     off,
+//     emit,
+//     count,
+// };

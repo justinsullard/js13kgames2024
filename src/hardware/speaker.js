@@ -9,6 +9,10 @@ import { colorMap, transparent, print } from "./screen.js";
 import each from "../util/each.js";
 import listen from "../util/listen.js";
 import { pow, max, min, abs, random } from "../util/math.js";
+import length from "../util/length.js";
+import assign from "../util/assign.js";
+import speak from "./voice.js";
+import values from "../util/values.js";
 
 const musick = notes();
 
@@ -61,6 +65,8 @@ const scales = uniq(
     ).flat()
 ).map(x => x.split(",").map(x => 1 * x));
 scales.push([0, 1, 4, 6, 8, 9, 12]);
+// console.log("scales.length", scales, scales.length);
+const scaleslength = length(scales);
 
 const melodies = {
     hi: {
@@ -347,10 +353,24 @@ const melodies = {
     },
 };
 // console.log({ scales, melodies });
-
+let lasttick = -1;
+let measure = 0;
 let key = 0;
 let melody = melodies.codetastrophy;
 let scale = scales[melody.scale];
+
+const startMeasure = () => {
+    measure++;
+    emit("start@measure", measure);
+};
+const endMeasure = () => {
+    emit("end@measure", measure);
+    if (measure === scaleslength - 1) {
+        shuffle();
+    } else {
+        scale = scales[(melody.scale + measure + 1) % scaleslength];
+    }
+};
 
 on("key@speaker", x => key = x % 13);
 on("scale@speaker", x => scale = scales[x] ?? scale);
@@ -358,6 +378,7 @@ on("melody@speaker", x => {
     melody = melodies[x] ?? melody;
     scale = scales[melody.scale] ?? scale;
     key = melody.key ?? key;
+    measure = 0;
 });
 
 const tickOfMeasure = (dur) => ((((dur / mpb) % 27) | 0) + 1) % 27;
@@ -384,7 +405,7 @@ const play = (tick, dur, type = "sine", octave = 1, note = 0, len = 1, vol = 0.5
     const verbage = dj.createGain();
     const split = dj.createChannelSplitter(2);
     const over = when + decay + 0.1;
-
+    // console.log("play", tick, dur, osc.frequency, freq, when, t);
     sval(osc.frequency, freq, when);
     sval(osc.frequency, freq, when + attack);
     expramp(osc.frequency, freq * deflate, when + decay);
@@ -429,7 +450,6 @@ const drum = (tick, dur) => {
 };
 
 
-let lasttick = -1;
 const scheduled = new Set();
 const data = new Uint8Array(79);
 
@@ -443,13 +463,14 @@ export const drawSpeaker = (dur) => {
     if (analyzer) {
         if (active && !scheduled.has(tick)) {
             if (tick === 0) {
-                emit("start@measure");
+                startMeasure();
             }
+            // console.log("rendering tick", tick, measure, dur);
             scheduled.add(tick);
             drum(tick, dur);
             bass(tick, dur);
             if (tick === 26) {
-                emit("end@measure");
+                endMeasure();
             }
         }
         analyzer.getByteTimeDomainData(data);
@@ -461,10 +482,12 @@ export const drawSpeaker = (dur) => {
 };
 export default drawSpeaker;
 // TODO: Remove this
-window.shuffle = () => {
-    const list = [...Object.values(melodies)];
+const shuffle = () => {
+    measure = 0;
+    const list = values(melodies);
     melody = list[(list.indexOf(melody) + 1) % list.length];
     scale = scales[melody.scale] ?? scale;
     key = melody.key ?? key;
-    emit("@say", `Now playing ${melody.name}`);
+    speak(`Now playing ${melody.name}`);
 };
+assign(window, { shuffle });

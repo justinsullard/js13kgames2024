@@ -1,4 +1,5 @@
-export default class ImportDefaultSpecifier {
-    // imported = null; // Identifier
-    local = null; // Identifier
-}
+import Invocation from "../bs/invocation.js";
+export const ImportDefaultSpecifier = Invocation("ImportDefaultSpecifier", [], [
+    ["local", null], // Identifier
+]);
+export default ImportDefaultSpecifier;

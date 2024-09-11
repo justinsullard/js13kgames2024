@@ -1,6 +1,7 @@
 import ClassMethod from "./classmethod.js";
-export default class ClassPrivateMethod extends ClassMethod {
-    key = null; // PrivateName
-    computed = false;
-    // kind != "constructor"
-}
+import Invocation from "../bs/invocation.js";
+export const ClassPrivateMethod = Invocation("ClassPrivateMethod", [ClassMethod], [
+    ["key", null], // PrivateName
+    ["computed", false], // computed !== true
+]);
+export default ClassPrivateMethod;

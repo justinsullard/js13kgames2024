@@ -1,6 +1,7 @@
 import Expression from "./expression.js";
-
-export default class NewExpression extends Expression {
-    callee = null; // Identifier
-    arguments = []; // Expression, Identifier, Literal, SpreadElement
-}
+import Invocation from "../bs/invocation.js";
+export const NewExpression = Invocation("NewExpression", [Expression], [
+    ["callee", null], // Identifier
+    ["arguments", []], // Expression, Identifier, Literal, SpreadElement
+]);
+export default NewExpression;

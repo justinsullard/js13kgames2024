@@ -1,4 +1,6 @@
 import Property from "./property.js";
-export default class ClassProperty extends Property {
-    static = false; // boolean
-}
+import Invocation from "../bs/invocation.js";
+export const ClassProperty = Invocation("ClassProperty", [Property], [
+    ["static", false], // boolean
+]);
+export default ClassProperty;

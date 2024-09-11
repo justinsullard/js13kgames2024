@@ -1,5 +1,7 @@
 import Statement from "./statement.js";
-export default class BlockStatement extends Statement {
-    body = []; // Statement, Declaration
-    innerComments = []; // Comment
-}
+import Evil from "../bs/evil.js";
+import Invocation from "../bs/invocation.js";
+export const BlockStatement = Invocation("BlockStatement", [Statement], [
+    ["body", []], // Statement, Declaration, Comment
+]);
+export default BlockStatement;

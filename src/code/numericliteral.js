@@ -1,4 +1,6 @@
 import Literal from "./literal.js";
-export default class NumericLiteral extends Literal {
-    value = null; // number
-}
+import Invocation from "../bs/invocation.js";
+export const NumericLiteral = Invocation("NumericLiteral", [Literal], [
+    ["value", null], // number
+]);
+export default NumericLiteral;

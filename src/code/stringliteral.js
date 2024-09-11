@@ -1,4 +1,6 @@
 import Literal from "./literal.js";
-export default class StringLiteral extends Literal {
-    value = null; // string
-}
+import Invocation from "../bs/invocation.js";
+export const StringLiteral = Invocation("StringLiteral", [Literal], [
+    ["value", null], // string
+]);
+export default StringLiteral;

@@ -1,4 +1,7 @@
 import Pattern from "./pattern.js";
-export default class ArrayPattern extends Pattern {
-    elements = []; // Identifier, RestElement
-}
+import Evil from "../bs/evil.js";
+import Invocation from "../bs/invocation.js";
+export const ArrayPattern = Invocation("ArrayPattern", [Pattern], [
+    ["elements", []], // Identifier, RestElement
+]);
+export default ArrayPattern
