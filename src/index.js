@@ -1,9 +1,9 @@
 import { on, emit, once } from "./hardware/bus.js";
 import loadFont from "./font/image.js";
-import Thing from "./bs/thing.js";
-import Prop from "./bs/prop.js";
-import Action from "./bs/action.js";
-import Mutation from "./bs/mutation.js";
+// import Thing from "./bs/thing.js";
+// import Prop from "./bs/prop.js";
+// import Action from "./bs/action.js";
+// import Mutation from "./bs/mutation.js";
 
 import "./hardware/cursor.js";
 import "./hardware/keyboard.js";
@@ -50,13 +50,13 @@ import drawTitle from "./grid/title.js";
 import drawMainMenu from "./grid/mainmenu.js";
 import drawLogin from "./grid/login.js";
 import { clearKeys } from "./plugins/keycontrols.js";
-import each from "./util/each.js";
-import Link from "./bs/link.js";
-import AST from "./code/ast.js";
-import assign from "./util/assign.js";
-assign(window, { AST });
+// import each from "./util/each.js";
+// import Link from "./bs/link.js";
+// import AST from "./code/ast.js";
+// import assign from "./util/assign.js";
+// assign(window, { AST });
 
-each([Thing, Prop, Action, Mutation, Link], x => console.log({ class: x, code: x.toString(), instance: new x() }));
+// each([Thing, Prop, Action, Mutation, Link], x => console.log({ class: x, code: x.toString(), instance: new x() }));
 
 // Maybe put this in to be cheaky about the devtools
 // const devtools = function () {};
@@ -72,10 +72,6 @@ each([Thing, Prop, Action, Mutation, Link], x => console.log({ class: x, code: x
 // console.log("DevTools: %s", devtools);
 
 const $ = x => document.getElementById(x);
-
-let paused = false;
-on("pause", () => paused = true);
-on("play", () => paused = false);
 
 let state = "init";
 const states = {
@@ -104,19 +100,10 @@ const main = async () => {
     const r = () => requestAnimationFrame(render);
     const render = (t = 0) => {
         const d = t - now;
-        if (!paused) {
-            dur += d;
-        }
+        dur += d;
         now = t;
-        
-        // Move the mouse
         emit("move@mouse", dur);
-
-        if (!paused) {
-            states[state](dur);
-            // emit(`draw@${state}`, dur);
-        }
-
+        states[state](dur);
         drawSpeaker(dur);
 
         // Draw the screen

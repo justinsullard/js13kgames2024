@@ -55,14 +55,18 @@ function MainMenu(you) {
 */
 export const drawMainMenu = (dur) => {
     drawConsole(dur);
+    // draw plugins
     drawKeyControls(dur);
     drawInformant(dur);
+
     drawBuzz(dur, 13);
     drawErrors(dur, 0);
     drawWarnings(dur, 0);
     drawBrowniePoints(dur, 0);
-    drawDumpsterFire(dur);
-    drawCursor(dur, 4 + cursor[0], 1 + cursor[1]);
     drawLoc(dur, ...cursor);
+
+    drawDumpsterFire(dur);
+
+    drawCursor(dur, 4 + cursor[0], 1 + cursor[1]);
 };
 export default drawMainMenu;

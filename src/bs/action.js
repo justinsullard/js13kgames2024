@@ -1,7 +1,6 @@
-import Evil from "./evil.js";
 import Invocation from "./invocation.js";
-import Thing from "./thing.js";
-export const Action = Invocation("Action", [Thing], [
+export const Action = Invocation("Action", [], [
+    ["name", null],
     ["inputs", []], // Thing, Prop
     ["mutations", []], // Mutation
     ["outputs", []], // Thing, Prop
